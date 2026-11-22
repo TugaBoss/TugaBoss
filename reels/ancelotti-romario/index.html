@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Reels — Romário x Ancelotti</title>
+<style>
+@font-face{font-family:Anton;src:url(fonts/anton-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:JBM;font-weight:500;src:url(fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:JBM;font-weight:700;src:url(fonts/jetbrains-mono-latin-700-normal.woff2) format("woff2")}
+:root{--cream:#EFEBE4;--ink:#111;--red:#E3202C;--mute:#8b867d}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--ink);font-family:Inter,sans-serif}
+*,*::before,*::after{animation-play-state:paused!important}
+
+.scene{position:absolute;inset:0;padding:0 80px;overflow:hidden}
+.scene.light{background:var(--cream);color:var(--ink)}
+.scene.dark{background:var(--ink);color:#fff}
+.scene.redbg{background:var(--red);color:#fff}
+.zoom{position:absolute;inset:0;padding:0 80px;transform-origin:50% 45%}
+.grid{position:absolute;inset:-200px;background-image:linear-gradient(currentColor 2px,transparent 2px),linear-gradient(90deg,currentColor 2px,transparent 2px);background-size:120px 120px;opacity:.05}
+.h{font-family:Anton;text-transform:uppercase;line-height:.98;letter-spacing:-.5px}
+.red{color:var(--red)}
+.label{display:inline-block;font-family:JBM;font-weight:700;font-size:30px;letter-spacing:3px;padding:12px 20px;background:var(--ink);color:#fff;text-transform:uppercase}
+.dark .label,.redbg .label{background:var(--red)}
+.redbg .label{background:var(--ink)}
+.mono{font-family:JBM;font-weight:500;font-size:28px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mute)}
+.body{font-size:46px;line-height:1.3;font-weight:500}
+.body b{font-weight:800}
+.abs{position:absolute}
+.w{display:inline-block;white-space:pre}
+.line{display:block;overflow:hidden;padding:6px 0}
+
+/* chrome */
+#chrome{position:absolute;inset:0;z-index:50;pointer-events:none;color:#fff}
+#bars{position:absolute;left:80px;right:80px;top:150px;display:flex;gap:10px}
+#bars i{flex:1;height:8px;background:color-mix(in srgb,currentColor 28%,transparent);position:relative;overflow:hidden}
+#bars i b{position:absolute;inset:0;background:currentColor;transform-origin:0 50%}
+#brand{position:absolute;left:80px;right:80px;top:180px;display:flex;justify-content:space-between;font-family:JBM;font-weight:700;font-size:26px;letter-spacing:1px}
+#brand span:last-child{font-weight:500;opacity:.7}
+
+/* captions */
+#caps{position:absolute;left:0;right:0;top:1395px;z-index:60;display:flex;justify-content:center}
+.cap{position:absolute;top:0;max-width:900px;text-align:center;background:#000;color:#fff;font-weight:800;font-size:46px;line-height:1.15;padding:16px 30px;border-radius:14px;box-shadow:0 0 0 3px rgba(255,255,255,.18),0 12px 40px rgba(0,0,0,.35)}
+.cap em{font-style:normal;color:#ff5a63}
+
+/* flash */
+#flash{position:absolute;inset:0;z-index:40;background:#fff;opacity:0;pointer-events:none}
+
+/* keyframes */
+@keyframes wipe{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes wipeL{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes cInk{from,to{color:#111}}
+@keyframes cWhite{from,to{color:#fff}}
+@keyframes gone{from,to{visibility:hidden}}
+@keyframes up{from{opacity:0;transform:translateY(70px)}to{opacity:1;transform:none}}
+@keyframes rise{from{transform:translateY(135%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes slam{0%{opacity:0;transform:scale(2.4) rotate(-4deg)}55%{opacity:1;transform:scale(.94)}75%{transform:scale(1.04)}100%{opacity:1;transform:none}}
+@keyframes stamp{0%{opacity:0;transform:rotate(-8deg) scale(3)}50%{opacity:1;transform:rotate(-8deg) scale(.9)}70%{transform:rotate(-8deg) scale(1.06)}100%{opacity:1;transform:rotate(-8deg) scale(1)}}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:none}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(-120px,-120px)}}
+@keyframes flash{0%{opacity:.85}100%{opacity:0}}
+@keyframes shake{0%,100%{transform:none}15%{transform:translate(-14px,6px)}30%{transform:translate(12px,-8px)}45%{transform:translate(-9px,-5px)}60%{transform:translate(8px,6px)}80%{transform:translate(-4px,2px)}}
+@keyframes flip{0%{opacity:0;transform:perspective(900px) rotateY(-110deg) rotate(var(--r,0deg)) translateY(120px)}100%{opacity:1;transform:perspective(900px) rotateY(0) rotate(var(--r,0deg))}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes capIn{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes digit{from{opacity:0;transform:translateY(-60%)}to{opacity:1;transform:none}}
+
+/* scoreboard */
+.board{position:absolute;left:80px;right:80px;top:640px;background:var(--ink);color:#fff;padding:46px 40px 84px}
+.teams{display:flex;justify-content:space-between;align-items:center}
+.team{font-family:Anton;font-size:74px;letter-spacing:1px;width:300px}
+.team:last-child{text-align:right}
+.score{display:flex;align-items:center;gap:22px;font-family:Anton;font-size:190px;line-height:1}
+.dg{position:relative;width:110px;height:200px}
+.dg span{position:absolute;inset:0;text-align:center}
+.x{font-size:70px;color:var(--mute)}
+.tl{position:relative;height:6px;background:#333;margin:44px 6px 0}
+.tl .fill{position:absolute;inset:0;background:var(--red);transform-origin:0 50%}
+.goal{position:absolute;top:-17px;width:40px;height:40px;border-radius:50%;margin-left:-20px;background:#fff;border:6px solid var(--ink)}
+.goal.br{background:#f5c400}
+.goal.last{background:var(--red)}
+.goal small{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:JBM;font-weight:700;font-size:22px;letter-spacing:1px;color:#fff}
+.goal.t small{top:-46px}.goal.b small{top:46px}
+.card{position:absolute;width:330px;height:470px;border-radius:26px;background:#fff;box-shadow:0 30px 0 rgba(0,0,0,.25)}
+.card.r{background:#b80f1a;box-shadow:inset 0 0 0 10px rgba(255,255,255,.18),0 30px 0 rgba(0,0,0,.25)}
+.btn{display:inline-block;font-family:Anton;font-size:108px;padding:18px 54px 10px;line-height:1.05}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- S1 · GANCHO -->
+<section class="scene dark" data-s="0" data-e="6.4">
+  <div class="grid" data-loop="drift"></div>
+  <div class="zoom">
+    <div class="abs h red" style="left:60px;top:330px;font-size:330px;line-height:.6" data-t="-0.15" data-a="pop">“</div>
+    <div class="abs h" style="left:80px;top:520px;font-size:178px">
+      <div><span class="w" data-t="0.00" data-a="slam">PEGA </span><span class="w" data-t="0.32" data-a="slam">TUAS</span></div>
+      <div><span class="w" data-t="0.62" data-a="slam">COISAS</span></div>
+      <div class="red"><span class="w" data-t="0.98" data-a="slam">E </span><span class="w" data-t="1.12" data-a="slam">METE</span></div>
+      <div class="red"><span class="w" data-t="1.42" data-a="slam">O PÉ”</span></div>
+    </div>
+    <div class="abs h" style="right:70px;top:345px;font-size:64px;background:var(--red);padding:14px 26px 8px;border:5px solid #fff" data-t="1.95" data-a="stamp" data-d="0.45">FORA, ANCELOTTI?</div>
+    <div class="abs" style="left:80px;top:1265px;width:150px;height:10px;background:var(--red);transform-origin:0 50%" data-t="2.3" data-a="growX"></div>
+    <div class="abs mono" style="left:80px;top:1300px;color:#bbb" data-t="2.45" data-a="up">Romário · Instagram · 14/11/2026</div>
+  </div>
+</section>
+
+<!-- S2 · O JOGO -->
+<section class="scene light" data-s="5.72" data-e="17">
+  <div class="grid" data-loop="drift"></div>
+  <div class="zoom" data-shake="14.55">
+    <div class="abs" style="left:80px;top:300px"><span class="label" data-t="5.9" data-a="wipeL">01 · O que aconteceu</span></div>
+    <div class="abs h" style="left:80px;top:390px;font-size:128px">
+      <span class="line"><span class="w" data-t="6.0" data-a="rise">Sábado, <span class="red">14/11</span></span></span>
+    </div>
+    <div class="abs mono" style="left:80px;top:560px" data-t="6.5" data-a="up">Amistoso · Singapura</div>
+
+    <div class="board" data-t="7.2" data-a="up" data-d="0.6">
+      <div class="teams">
+        <div class="team">JAPÃO</div>
+        <div class="score">
+          <div class="dg"><span data-t="7.2" data-o="8.9" data-a="fade">0</span><span data-t="8.9" data-o="9.9" data-a="digit">1</span><span data-t="9.9" data-o="14.55" data-a="digit">2</span><span class="red" data-t="14.55" data-a="slam">3</span></div>
+          <span class="x">×</span>
+          <div class="dg"><span data-t="7.2" data-o="11.4" data-a="fade">0</span><span data-t="11.4" data-o="12.2" data-a="digit">1</span><span data-t="12.2" data-a="digit">2</span></div>
+        </div>
+        <div class="team">BRASIL</div>
+      </div>
+      <div class="tl">
+        <div class="fill" data-t="8.0" data-a="growX" data-d="6.8" data-ease="linear"></div>
+        <div class="goal t" style="left:16%" data-t="8.9" data-a="pop"><small>KUBO</small></div>
+        <div class="goal b" style="left:21%" data-t="9.9" data-a="pop"><small>NAKAMURA</small></div>
+        <div class="goal br t" style="left:37%" data-t="11.4" data-a="pop"><small>VINI JR</small></div>
+        <div class="goal br b" style="left:80%" data-t="12.2" data-a="pop"><small>VINI JR</small></div>
+        <div class="goal last t" style="left:98%" data-t="14.55" data-a="pop"><small style="left:auto;right:-10px;transform:none">SAKAMOTO 90+</small></div>
+      </div>
+    </div>
+
+    <div class="abs h" style="left:80px;top:1150px;font-size:104px">
+      <span class="line"><span class="w" data-t="8.3" data-o="10.9" data-a="rise">0 a 2 em 20 minutos</span></span>
+    </div>
+    <div class="abs h" style="left:80px;top:1150px;font-size:104px">
+      <span class="line"><span class="w" data-t="10.95" data-o="13.0" data-a="rise">Vini Jr. <span class="red">empata</span></span></span>
+    </div>
+    <div class="abs h" style="left:80px;top:1150px;font-size:104px">
+      <span class="line"><span class="w" data-t="13.05" data-a="rise">Virada nos <span class="red">acréscimos</span></span></span>
+    </div>
+    <div class="abs body" style="left:80px;top:1290px" data-t="15.3" data-a="up">Gol decisivo aos <b>90+</b>, sob protesto dos brasileiros.</div>
+  </div>
+</section>
+
+<!-- S3 · VERMELHOS -->
+<section class="scene redbg" data-s="16.35" data-e="20.7">
+  <div class="grid" data-loop="drift"></div>
+  <div class="zoom">
+    <div class="abs" style="left:80px;top:300px"><span class="label" data-t="16.5" data-a="wipeL">E ainda teve isso</span></div>
+    <div class="abs h" style="left:80px;top:390px;font-size:190px">
+      <span class="line"><span class="w" data-t="16.5" data-a="rise">Dois</span></span>
+      <span class="line"><span class="w" data-t="16.7" data-a="rise" style="color:var(--ink)">vermelhos</span></span>
+    </div>
+    <div class="card r" style="left:150px;top:830px;--r:-9deg" data-t="16.9" data-a="flip" data-d="0.55"></div>
+    <div class="card r" style="left:590px;top:830px;--r:8deg" data-t="17.75" data-a="flip" data-d="0.55"></div>
+    <div class="abs h" style="left:150px;top:1010px;width:330px;text-align:center;font-size:58px;transform:rotate(-9deg)" data-t="17.2" data-a="fade">Ancelotti</div>
+    <div class="abs h" style="left:590px;top:1010px;width:330px;text-align:center;font-size:58px;transform:rotate(8deg)" data-t="18.05" data-a="fade">Raphinha</div>
+  </div>
+</section>
+
+<!-- S4 · O RECADO -->
+<section class="scene dark" data-s="20.05" data-e="30.3">
+  <div class="grid" data-loop="drift"></div>
+  <div class="zoom">
+    <div class="abs" style="left:80px;top:300px"><span class="label" data-t="20.2" data-a="wipeL">02 · O recado</span></div>
+    <div class="abs mono" style="left:80px;top:390px;color:#bbb" data-t="20.5" data-a="up">O tetra não perdoou</div>
+
+    <div class="abs h red" style="left:66px;top:470px;font-size:300px;line-height:.6" data-t="22.6" data-a="pop">“</div>
+    <div class="abs h" style="left:80px;top:640px;font-size:200px">
+      <div><span class="w" data-t="22.89" data-a="slam">ANCELOTTI,</span></div>
+      <div class="red"><span class="w" data-t="23.6" data-a="slam">JÁ </span><span class="w" data-t="23.85" data-a="slam">DEU!</span></div>
+    </div>
+    <div class="abs" style="left:80px;right:80px;top:1090px;height:4px;background:#fff;transform-origin:0 50%" data-t="24.5" data-a="growX"></div>
+    <div class="abs body" style="left:80px;right:80px;top:1125px;color:#ddd" data-t="24.75" data-a="up">Cobrou <b class="red" style="font-family:Anton;font-size:64px;letter-spacing:1px">CORAGEM</b> do presidente da CBF, <b>Samir Xaud</b>, para demitir o técnico.</div>
+    <div class="abs mono" style="left:80px;top:1320px" data-t="26.6" data-a="up">Post de Romário no Instagram, 14/11</div>
+  </div>
+</section>
+
+<!-- S5 · A RESPOSTA -->
+<section class="scene light" data-s="29.7" data-e="35.3">
+  <div class="grid" data-loop="drift"></div>
+  <div class="zoom">
+    <div class="abs" style="left:80px;top:300px"><span class="label" data-t="29.85" data-a="wipeL">03 · A resposta</span></div>
+    <div class="abs h" style="left:80px;top:390px;font-size:150px">
+      <span class="line"><span class="w" data-t="29.9" data-a="rise">Ancelotti</span></span>
+      <span class="line"><span class="w red" data-t="30.1" data-a="rise">responde</span></span>
+    </div>
+    <div class="abs" style="left:80px;right:80px;top:770px;background:var(--ink);color:#fff;padding:54px 50px 50px" data-t="31.4" data-a="up">
+      <div class="h" style="font-size:100px;line-height:1.06">
+        <span class="w" data-t="31.82" data-a="up" data-d="0.25">“O </span><span class="w" data-t="31.95" data-a="up" data-d="0.25">Romário </span><br><span class="w red" data-t="32.4" data-a="up" data-d="0.25">fala </span><span class="w red" data-t="32.75" data-a="up" data-d="0.25">muito,</span><br><span class="w" data-t="33.42" data-a="up" data-d="0.25">e é um </span><span class="w" data-t="33.85" data-a="up" data-d="0.25">direito </span><span class="w" data-t="34.2" data-a="up" data-d="0.25">dele.”</span>
+      </div>
+    </div>
+    <div class="abs mono" style="left:80px;top:1318px" data-t="33.5" data-a="up">Coletiva de imprensa, 16/11</div>
+  </div>
+</section>
+
+<!-- S6 · 7x0 -->
+<section class="scene dark" data-s="34.7" data-e="42.5">
+  <div class="grid" data-loop="drift"></div>
+  <div class="zoom" data-shake="38.2">
+    <div class="abs" style="left:80px;top:300px"><span class="label" data-t="34.85" data-a="wipeL">04 · O dia seguinte</span></div>
+    <div class="abs h" style="left:80px;top:390px;font-size:104px">
+      <span class="line"><span class="w" data-t="35.0" data-a="rise">Técnico <span class="red">suspenso</span></span></span>
+    </div>
+    <div class="abs mono" style="left:80px;top:540px;color:#bbb" data-t="35.8" data-a="up">Singapura × Brasil · 17/11</div>
+
+    <div class="abs h" style="left:0;right:0;top:600px;display:flex;justify-content:center;align-items:center;gap:30px;font-size:520px;line-height:1" data-t="37.0" data-a="fade">
+      <div class="dg" id="count" style="width:290px;height:540px"></div>
+      <span class="red" style="font-size:240px">×</span>
+      <div class="dg" style="width:290px;height:540px"><span style="color:#555">0</span></div>
+    </div>
+    <div class="abs" style="left:80px;top:1215px;display:flex;align-items:center;gap:22px">
+      <div class="goal br" style="position:static;margin:0;width:64px;height:64px;border-color:#f5c400" data-t="40.14" data-a="pop"></div>
+      <div class="goal br" style="position:static;margin:0;width:64px;height:64px;border-color:#f5c400" data-t="40.4" data-a="pop"></div>
+      <div class="goal br" style="position:static;margin:0;width:64px;height:64px;border-color:#f5c400" data-t="40.66" data-a="pop"></div>
+      <div class="h" style="font-size:84px;margin-left:14px;padding-top:8px" data-t="40.8" data-a="up">Vini Jr. <span class="red">3 gols</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- S7 · CTA -->
+<section class="scene dark" data-s="41.95" data-e="60">
+  <div class="grid" data-loop="drift"></div>
+  <div class="zoom">
+    <div class="abs" style="left:80px;top:300px"><span class="label" data-t="42.1" data-a="wipeL">Enquete</span></div>
+    <div class="abs mono" style="left:80px;top:390px;color:#bbb" data-t="42.4" data-a="up">CBF: nenhuma decisão até agora</div>
+    <div class="abs h" style="left:80px;top:455px;font-size:210px">
+      <span class="line"><span class="w" data-t="42.15" data-o="44.78" data-a="rise">E a CBF?</span></span>
+      <span class="line"><span class="w red" data-t="43.0" data-o="44.78" data-a="slam">Silêncio.</span></span>
+    </div>
+    <div class="abs h" style="left:80px;top:455px;font-size:210px">
+      <span class="line"><span class="w" data-t="44.84" data-a="rise">Ancelotti</span></span>
+      <span class="line"><span class="w" data-t="46.36" data-a="rise">fica ou</span></span>
+      <span class="line"><span class="w red" data-t="47.64" data-a="slam">sai?</span></span>
+    </div>
+    <div class="abs" style="left:80px;top:1160px;display:flex;gap:26px">
+      <div data-t="46.5" data-a="pop"><div class="btn" style="background:#fff;color:var(--ink)" data-pulse="48.6">FICA</div></div>
+      <div data-t="47.75" data-a="pop"><div class="btn" style="background:var(--red);color:#fff" data-pulse="49.1">SAI</div></div>
+    </div>
+  </div>
+</section>
+
+<div id="flash"></div>
+<div id="caps"></div>
+<div id="chrome">
+  <div id="bars"></div>
+  <div id="brand"><span>@camisa10gyn</span><span>©2026 Camisa 10 Gyn</span></div>
+</div>
+</div>
+
+<script>
+const OFF = 0.25, DUR = 50.6;
+const EASE = 'cubic-bezier(.16,1,.3,1)';
+const scenes = [...document.querySelectorAll('.scene')];
+const add = (el, s) => { el.style.animation = el.style.animation ? el.style.animation + ',' + s : s; };
+
+// counter digits 0..7
+const cnt = document.getElementById('count');
+for (let i = 0; i <= 7; i++) {
+  const t = 37.0 + i * 0.17, s = document.createElement('span');
+  s.textContent = i; s.dataset.t = i ? t.toFixed(2) : '37.0'; s.dataset.a = i === 7 ? 'slam' : 'fade'; s.dataset.d = i === 7 ? '0.5' : '0.05';
+  if (i < 7) s.dataset.o = (37.0 + (i + 1) * 0.17).toFixed(2); else s.className = 'red';
+  cnt.appendChild(s);
+}
+
+scenes.forEach((sc, i) => {
+  const s = Math.max(0, +sc.dataset.s + OFF), e = +sc.dataset.e + OFF;
+  sc.style.zIndex = i + 1;
+  if (i) add(sc, `wipe .55s ${EASE} ${s}s both`);
+  if (e < DUR) add(sc, `gone 1s linear ${e}s forwards`);
+  const z = sc.querySelector('.zoom');
+  add(z, `zoom ${e - s}s linear ${s}s both`);
+  if (z.dataset.shake) { const g = sc.querySelector('.grid'); add(sc.querySelector('.board') || g, `shake .5s linear ${+z.dataset.shake + OFF}s`); }
+  sc.querySelectorAll('[data-loop]').forEach(g => add(g, `drift 8s linear 0s infinite`));
+});
+document.querySelectorAll('[data-t]').forEach(el => {
+  const t = Math.max(0, +el.dataset.t + OFF), d = el.dataset.d || (el.dataset.a === 'slam' ? .38 : el.dataset.a === 'pop' ? .4 : .6);
+  add(el, `${el.dataset.a} ${d}s ${el.dataset.ease || EASE} ${t}s both`);
+  if (el.dataset.o) add(el, `gone 1s linear ${+el.dataset.o + OFF}s forwards`);
+});
+document.querySelectorAll('[data-pulse]').forEach(el => add(el, `pulse .5s ease-in-out ${+el.dataset.pulse + OFF}s 2`));
+
+// progress bars
+const bars = document.getElementById('bars');
+scenes.forEach((sc, i) => {
+  const s = Math.max(0, +sc.dataset.s + OFF), e = Math.min(DUR, (scenes[i + 1] ? +scenes[i + 1].dataset.s : DUR) + OFF);
+  if (i) add(document.getElementById('chrome'), `${sc.classList.contains('light') ? 'cInk' : 'cWhite'} .01s linear ${s + .25}s forwards`);
+  const b = document.createElement('i'); b.innerHTML = '<b></b>'; bars.appendChild(b);
+  add(b.firstChild, `growX ${e - s}s linear ${s}s both`);
+});
+
+// flashes on impacts
+const flash = document.getElementById('flash');
+[14.55, 16.4, 38.2].forEach(t => add(flash, `flash .35s ease-out ${t + OFF}s`));
+
+// captions [start, end, html]
+const CAPS = [
+  [0.00,1.95,'Pega tuas coisas <em>e mete o pé!</em>'],
+  [2.30,3.95,'Foi assim que Romário pediu'],
+  [3.95,5.70,'a saída de <em>Ancelotti</em> da Seleção.'],
+  [5.83,7.85,'Sábado, 14 de novembro.'],
+  [8.04,10.75,'O Brasil levou dois gols em menos de 20 minutos,'],
+  [10.75,12.75,'empatou com dois de <em>Vini Júnior</em>,'],
+  [12.75,15.2,'e perdeu para o Japão nos acréscimos:'],
+  [15.36,16.35,'<em>três a dois.</em>'],
+  [16.48,18.2,'Ancelotti e Raphinha'],
+  [18.2,20.0,'ainda foram <em>expulsos</em> por reclamação.'],
+  [20.18,22.7,'No Instagram, o tetra não perdoou:'],
+  [22.89,24.5,'<em>“Ancelotti, já deu!”</em>'],
+  [24.73,27.3,'E cobrou coragem do presidente da CBF,'],
+  [27.3,29.65,'Samir Xaud, para <em>demitir o técnico.</em>'],
+  [29.82,31.6,'A resposta veio na coletiva:'],
+  [31.82,33.25,'<em>“O Romário fala muito,</em>'],
+  [33.42,34.6,'<em>e é um direito dele.”</em>'],
+  [34.82,37.1,'No dia seguinte, com o técnico suspenso,'],
+  [37.1,39.98,'o Brasil fez <em>sete a zero</em> em Singapura.'],
+  [40.14,41.88,'Três gols de Vini Júnior.'],
+  [42.03,44.67,'Até agora, <em>nenhuma decisão</em> da CBF.'],
+  [44.84,46.17,'Então decide você:'],
+  [46.36,48.25,'Ancelotti <em>fica, ou sai?</em>'],
+  [48.45,49.6,'Comenta aí! 👇'],
+];
+const caps = document.getElementById('caps');
+CAPS.forEach(([s, e, h]) => {
+  const c = document.createElement('div'); c.className = 'cap'; c.innerHTML = h; caps.appendChild(c);
+  add(c, `capIn .18s ${EASE} ${s + OFF}s both`); add(c, `gone 1s linear ${e + OFF}s forwards`);
+});
+
+window.DUR = DUR;
+window.seek = t => { document.getAnimations().forEach(a => { a.currentTime = t * 1000; }); };
+seek(0);
+</script>
+</body>
+</html>
