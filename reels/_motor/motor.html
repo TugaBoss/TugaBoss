@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Motor de Reels — Tuga Boss</title>
+<style>
+@font-face{font-family:Anton;src:url(fonts/anton-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:Serif;font-style:italic;src:url(fonts/instrument-serif-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:Mono;font-weight:500;src:url(fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Mono;font-weight:700;src:url(fonts/jetbrains-mono-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:Jak;font-weight:400;src:url(fonts/plus-jakarta-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:Jak;font-weight:500;src:url(fonts/plus-jakarta-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Jak;font-weight:700;src:url(fonts/plus-jakarta-sans-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:Jak;font-weight:800;src:url(fonts/plus-jakarta-sans-latin-800-normal.woff2) format("woff2")}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#000}
+*,*::before,*::after{animation-play-state:paused!important}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#000;font-family:Jak}
+.scene{position:absolute;inset:0;overflow:hidden;background:var(--bg);color:var(--fg)}
+.grain{position:absolute;inset:-50%;opacity:var(--grain);pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.abs{position:absolute}
+.anton{font-family:Anton;text-transform:uppercase;line-height:.92;letter-spacing:.005em}
+.serif{font-family:Serif;font-style:italic;font-weight:400;text-transform:none;letter-spacing:0}
+.mono{font-family:Mono;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.acc{color:var(--acc)}
+.sub{color:var(--sub)}
+.w{display:inline-block;white-space:pre}
+.ln{display:block;overflow:hidden;padding:.08em 0;margin:-.08em 0}
+.pill{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:999px}
+.chip{display:inline-block;font-family:Mono;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--fg);border-radius:999px;padding:8px 18px;background:var(--bg)}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#000}
+.card{background:var(--card);border-radius:22px}
+.col{position:absolute;left:80px;right:80px;display:flex;flex-direction:column;align-items:flex-start}
+.media{position:absolute;overflow:hidden;background:var(--card)}
+.media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* chrome */
+.sig{left:80px;top:210px;display:flex;align-items:center;gap:14px;font-weight:700;font-size:28px}
+.sig img{width:68px;height:68px;border-radius:50%}
+.chk{width:28px;height:28px;margin-left:-6px}
+.copy{right:80px;top:232px;font-family:Mono;font-weight:500;font-size:20px;color:var(--sub);letter-spacing:.02em}
+.seg{left:80px;right:80px;top:300px;display:flex;gap:8px}
+.seg div{flex:1;height:8px;border-radius:4px;background:var(--line);position:relative;overflow:hidden}
+.seg div i{position:absolute;inset:0;background:var(--acc);transform-origin:0 50%}
+.cnt{right:180px;top:1500px;font-family:Mono;font-weight:700;font-size:26px}
+/* legendas */
+#caps{position:absolute;left:80px;width:820px;top:1480px;height:0;z-index:60}
+.cap{position:absolute;left:0;right:0;bottom:0;margin:0 auto;width:fit-content;max-width:820px;text-align:center;font-weight:800;font-size:44px;line-height:1.16;padding:14px 26px 16px;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.28)}
+.cap.claro{background:#000;color:#E6E5C7}
+.cap.escuro{background:#E6E5C7;color:#000}
+.cap i{font-style:normal}
+#fx{position:absolute;inset:0;z-index:55;pointer-events:none}
+.sweep{position:absolute;top:-10%;bottom:-10%;left:0;width:150%;background:#FF4E08;transform:translateX(-120%) skewX(-14deg)}
+.flash{position:absolute;inset:0;background:#fff;opacity:0}
+
+@keyframes wipeUp{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0)}}
+@keyframes wipeD{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+@keyframes wipeL{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes wipeR{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0)}}
+@keyframes circle{from{clip-path:circle(0% at 50% 50%)}to{clip-path:circle(75% at 50% 50%)}}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:none}}
+@keyframes zoomIn{from{opacity:0;transform:scale(1.25)}to{opacity:1;transform:none}}
+@keyframes cut{from{visibility:hidden}to{visibility:visible}}
+@keyframes hide{from,to{visibility:hidden}}
+@keyframes sweep{from{transform:translateX(-120%) skewX(-14deg)}to{transform:translateX(120%) skewX(-14deg)}}
+@keyframes flash{from{opacity:.7}to{opacity:0}}
+@keyframes up{from{opacity:0;transform:translateY(70px)}to{opacity:1;transform:none}}
+@keyframes rise{from{transform:translateY(120%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes slam{0%{opacity:0;transform:scale(2.3)}55%{opacity:1;transform:scale(.95)}78%{transform:scale(1.03)}100%{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:none}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes kb{from{transform:scale(1.03)}to{transform:scale(1.16)}}
+@keyframes deal{from{opacity:0;transform:translateY(500px) rotate(0deg) scale(.8)}to{opacity:1;transform:rotate(var(--r))}}
+@keyframes archUp{from{transform:translateY(105%)}to{transform:none}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes capIn{from{opacity:0;transform:translateY(22px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes hl{from,to{color:#FF4E08}}
+@keyframes act{from,to{box-shadow:0 0 0 4px var(--acc);opacity:1}}
+@keyframes dim{to{opacity:.38}}
+@keyframes on{from,to{background:var(--acc);border-color:var(--acc)}}
+@keyframes check{0%{opacity:0;transform:scale(0) rotate(-30deg)}70%{opacity:1;transform:scale(1.25)}100%{opacity:1;transform:none}}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+</style>
+</head>
+<body>
+<div id="stage"><div id="fx"></div><div id="caps"></div></div>
+<script>
+const BASE = new URLSearchParams(location.search).get('reel') || './';
+document.write(`<script src="${BASE}data.js"><\/script>`);
+</script>
+<script>
+const R = window.ROTEIRO, CUES = window.CUES, SCN = window.SCENES, DUR = window.DUR, ANO = window.ANO;
+const TH = {
+  claro:  {bg:'#E6E5C7', fg:'#000000', sub:'#3E3B2C', acc:'#FF4E08', onacc:'#000000', card:'#F1F0DA', line:'rgba(62,59,44,.2)', grain:.09, logo:'marca/logo_escura.png'},
+  escuro: {bg:'#000000', fg:'#E6E5C7', sub:'#B9B79A', acc:'#FF4E08', onacc:'#000000', card:'#1C1B14', line:'rgba(230,229,199,.2)', grain:.05, logo:'marca/logo_clara.png'},
+};
+const EASE = 'cubic-bezier(.16,1,.3,1)';
+const EVENTS = []; const ev = (t, k) => EVENTS.push({t: +(+t).toFixed(3), k});
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const fmt = s => esc(s).replace(/_(.+?)_/g, '<span class="serif acc">$1</span>').replace(/\*(.+?)\*/g, '<span class="acc">$1</span>').replace(/\n/g, '<br>');
+const plain = s => String(s ?? '').replace(/[*_]/g, '');
+const A = (a, t, d) => ` data-a="${a}" data-t="${(+t).toFixed(3)}"${d != null ? ` data-d="${d}"` : ''}`;
+const src = p => BASE + p;
+const isVid = m => /\.(webm|mp4|mov)$/i.test(m);
+function mediaTag(m, k, kb = true) {
+  if (!m) return '';
+  if (isVid(m)) return `<video muted preload="auto" playsinline src="${src(m.replace(/\.(mp4|mov)$/i, '.webm'))}" data-vs="${SCN[k].s}"></video>`;
+  return `<img src="${src(m)}"${kb ? ' data-kb="1"' : ''}>`;
+}
+// palavras com marcação → spans que entram uma a uma
+function words(text, t0, step = .1, anim = 'slam', d) {
+  const t = String(text ?? '').replace(/([*_])(.+?)\1/g, (m, q, x) => x.split(' ').map(w => q + w + q).join(' '));
+  let i = 0;
+  return t.split('\n').map(line => line.split(' ').filter(Boolean).map(w => `<span class="w"${A(anim, t0 + (i++) * step, d)}>${fmt(w)} </span>`).join('')).join('<br>');
+}
+// tempo estimado de cada palavra falada (proporcional ao tamanho)
+const WT = CUES.map(c => {
+  const ws = plain(c.cap).split(/\s+/).filter(Boolean), tot = ws.reduce((a, w) => a + w.length + 2, 0);
+  let acc = 0; return ws.map(w => { const t = c.s + (c.e - c.s) * acc / tot; acc += w.length + 2; return {w, t}; });
+});
+const norm = w => w.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+function findWord(k, word, after = 0) {
+  const n = norm(word);
+  for (const [ci, c] of CUES.entries()) if (c.k === k) for (const x of WT[ci]) if (x.t >= after && norm(x.w) === n) return x.t;
+  return null;
+}
+
+function timer(k) {
+  const lines = CUES.filter(c => c.k === k), S0 = SCN[k].s;
+  const L = (i, o = 0) => (lines[Math.min(i, lines.length - 1)] || {s: S0 + .3}).s + o;
+  const E = (i, o = 0) => (lines[Math.min(i, lines.length - 1)] || {e: SCN[k].e - .3}).e + o;
+  return {L, E, S: (o = 0) => S0 + o, n: lines.length, end: SCN[k].e};
+}
+// item j: na frase j (ou j+1 se houver frase de abertura), senão escalonado
+function itemTime(T, sc, j, nItems) {
+  const it = sc.itens[j];
+  if (it && it.em != null) return T.L(it.em, .1);
+  if (T.n === nItems) return T.L(j, .1);
+  if (T.n === nItems + 1) return T.L(j + 1, .1);
+  return T.L(0, .8 + j * .45);
+}
+
+const CHECK = `<svg class="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1D9BF0"/><path d="M7 12.5l3.2 3.2L17.2 8.6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function chrome(k, th) {
+  const n = R.cenas.length;
+  const segs = R.cenas.map((_, i) => `<div><i style="transform:scaleX(${i < k ? 1 : 0})"${i === k ? A('growX', SCN[k].s, (SCN[k].e - SCN[k].s).toFixed(2)) + ' data-ease="linear"' : ''}></i></div>`).join('');
+  return `<div class="abs sig"><img src="${th.logo}">@tugabossdigital${CHECK}</div>
+    <div class="abs copy">©${ANO} Tuga Boss Digital</div>
+    <div class="abs seg">${segs}</div>
+    <div class="abs cnt">${String(k + 1).padStart(2, '0')}/${String(n).padStart(2, '0')}</div>`;
+}
+
+// ---------- tipos de cena ----------
+const TYPES = {
+  capa(sc, k, T) {
+    let h = `<div class="col" style="top:360px;gap:22px">`;
+    if (sc.kicker) h += `<div class="mono sub" style="font-size:26px"${A('wipeL', T.S(.15), .6)}>${esc(sc.kicker)}</div>`;
+    h += `<div class="anton" style="font-size:${sc.tamanho || 140}px;width:920px">${words(sc.titulo, T.L(0), .11)}</div>`;
+    ev(T.L(0), 'slam');
+    if (sc.pilula) { const tp = T.n > 1 ? T.L(1) : T.L(0, 1.2); h += `<div class="anton pill" style="font-size:${sc.tamPilula || 92}px;padding:14px 36px 8px"${A('wipeL', tp, .55)}>${esc(sc.pilula)}</div>`; ev(tp, 'whoosh'); }
+    h += `</div>`;
+    if (sc.cartas) {
+      const n = sc.cartas.length, rot = n === 3 ? [-9, 0, 9] : n === 2 ? [-6, 6] : [0], dx = n === 3 ? [-250, 0, 250] : n === 2 ? [-150, 150] : [0];
+      sc.cartas.forEach((m, i) => { const t = T.L(0, .55 + i * .2); ev(t, 'pop');
+        h += `<div class="media" style="left:${540 - 180 + dx[i]}px;top:${i === 1 ? 860 : 900}px;width:360px;height:450px;border-radius:18px;border:3px solid var(--fg);box-shadow:14px 14px 0 var(--acc);--r:${rot[i]}deg;z-index:${i === 1 ? 3 : 2}"${A('deal', t, .7)}>${mediaTag(m, k, false)}</div>`; });
+    } else if (sc.media) {
+      h += `<div class="media" style="left:170px;top:880px;width:740px;height:700px;border-radius:370px 370px 0 0"${A('archUp', T.L(0, .4), .9)}>${mediaTag(sc.media, k)}</div>`;
+    }
+    return h;
+  },
+  forte(sc, k, T) {
+    let h = '';
+    if (sc.rotulo) h += `<div class="abs mono acc" style="left:80px;top:360px;font-size:26px"${A('wipeL', T.S(.15), .6)}>${esc(sc.rotulo)}</div>`;
+    const num = String(sc.numero ?? ''), size = sc.tamNumero || (num.length <= 2 ? 600 : num.length <= 4 ? 400 : 260);
+    const t0 = T.L(0, -.05);
+    const st = `left:56px;top:390px;font-size:${size}px;line-height:1;letter-spacing:-.01em`;
+    if (/^\d+$/.test(num) && +num > 1) {
+      const N = +num, steps = Math.min(N, 14), vals = [...new Set(Array.from({length: steps + 1}, (_, i) => Math.round(N * (1 - Math.pow(1 - i / steps, 2)))))];
+      const stack = (cls, extra) => `<div class="abs anton ${cls}" style="${st};${extra}">` + vals.map((v, i) => `<span style="position:${i === vals.length - 1 ? 'relative' : 'absolute'};left:0;top:0"${A('cut', t0 + i * .06, .01)}${i < vals.length - 1 ? ` data-x="${(t0 + (i + 1) * .06).toFixed(3)}"` : ''}>${v}</span>`).join('') + `</div>`;
+      h += stack('', 'color:transparent;-webkit-text-stroke:6px var(--acc)');
+      const tf = t0 + vals.length * .06 + .1;
+      h += `<div class="abs anton acc" style="${st}"${A('wipeUp', tf, .5)}>${num}</div>`;
+      for (let i = 0; i < vals.length; i += 2) ev(t0 + i * .06, 'tick');
+      ev(tf, 'impact');
+    } else if (num) {
+      h += `<div class="abs anton" style="${st};color:transparent;-webkit-text-stroke:6px var(--acc)"${A('slam', t0, .4)}>${esc(num)}</div>`; ev(t0, 'impact');
+    }
+    h += `<div class="col" style="top:${sc.topoTitulo || 1000}px;gap:24px">`;
+    if (sc.titulo) h += `<div class="anton" style="font-size:${sc.tamanho || 110}px;width:920px">${words(sc.titulo, T.L(0, .7), .1, 'up', .5)}</div>`;
+    if (sc.texto) h += `<div style="font-size:40px;font-weight:700;color:var(--sub)"${A('up', T.L(Math.min(1, T.n - 1), .3))}>${fmt(sc.texto)}</div>`;
+    return h + `</div>`;
+  },
+  lista(sc, k, T) {
+    let h = '', left = sc.numero ? 360 : 80;
+    if (sc.numero) { h += `<div class="abs anton acc" style="left:66px;top:340px;font-size:420px;line-height:.82"${A('slam', T.S(.2), .45)}>${esc(sc.numero)}</div>`; ev(T.S(.2), 'slam'); }
+    h += `<div class="abs" style="left:${left}px;right:80px;top:380px">`;
+    if (sc.titulo) h += `<div class="anton" style="font-size:${sc.tamanho || 92}px"><span class="ln"><span class="w"${A('rise', T.S(.3))}>${fmt(sc.titulo)}</span></span></div>`;
+    if (sc.subtitulo) h += `<div class="serif" style="font-size:${sc.tamSub || 92}px;line-height:1"><span class="ln"><span class="w"${A('rise', T.S(.5))}>${fmt(sc.subtitulo)}</span></span></div>`;
+    h += `</div><div class="col" style="top:${sc.topoItens || 800}px;gap:18px;align-items:stretch">`;
+    const n = sc.itens.length;
+    sc.itens.forEach((it, j) => {
+      const t = itemTime(T, sc, j, n), tn = j < n - 1 ? itemTime(T, sc, j + 1, n) : T.end;
+      ev(t, 'pop');
+      h += `<div${A('up', t, .5)}><div class="card" style="display:flex;align-items:center;gap:24px;padding:20px 28px" data-act="${t.toFixed(3)}" data-actd="${(tn - t).toFixed(3)}">
+        <span class="anton acc" style="font-size:58px">${String(j + 1).padStart(2, '0')}</span><span style="font-weight:700;font-size:36px">${fmt(it.texto ?? it)}</span></div></div>`;
+    });
+    return h + `</div>`;
+  },
+  tela(sc, k, T) {
+    let h = `<div class="abs card" style="left:80px;top:360px;width:920px;height:574px;overflow:hidden;border:2px solid var(--line)"${A('up', T.S(.1), .7)}>
+      <div style="height:56px;display:flex;align-items:center;gap:12px;padding:0 22px;border-bottom:2px solid var(--line)">
+        <i style="width:16px;height:16px;border-radius:50%;background:var(--acc)"></i><i style="width:16px;height:16px;border-radius:50%;background:var(--sub)"></i><i style="width:16px;height:16px;border-radius:50%;background:var(--sub)"></i>
+        <span class="mono" style="margin-left:18px;font-size:18px;color:var(--sub)">${esc(sc.janela || 'claude.ai')}</span></div>
+      <div class="media" style="left:0;right:0;top:56px;bottom:0">${mediaTag(sc.media, k)}</div></div>`;
+    h += `<div class="col" style="top:975px;gap:18px">`;
+    if (sc.etiqueta) h += `<div class="mono acc" style="font-size:24px"${A('wipeL', T.L(0, .1), .5)}>● ${esc(sc.etiqueta)}</div>`;
+    if (sc.texto) {
+      const txt = plain(sc.texto), t0 = T.L(0, .35), span = Math.max(.6, (T.E(0) - t0) * .8), cps = Math.min(.05, span / txt.length);
+      let chars = ''; [...txt].forEach((c, i) => { chars += c === '\n' ? '<br>' : `<span${A('cut', t0 + i * cps, .01)} style="visibility:hidden">${esc(c)}</span>`; if (i % 3 === 0 && c.trim()) ev(t0 + i * cps, 'type'); });
+      h += `<div class="mono" style="font-size:${sc.tamanho || 62}px;line-height:1.12;letter-spacing:0;width:920px">${chars}<span style="display:inline-block;width:.55em;height:.9em;background:var(--acc);vertical-align:-.1em;animation:caret .8s steps(1) infinite"></span></div>`;
+    }
+    if (sc.serif) h += `<div class="serif acc" style="font-size:${sc.tamSerif || 76}px;line-height:1"><span class="ln"><span class="w"${A('rise', T.L(T.n > 1 ? 1 : 0, T.n > 1 ? .1 : 1.4))}>${fmt(sc.serif)}</span></span></div>`;
+    return h + `</div>`;
+  },
+  antesdepois(sc, k, T) {
+    let h = `<div class="col" style="top:360px"><div class="anton" style="font-size:${sc.tamanho || 130}px;line-height:.88;width:940px">${words(sc.titulo, T.L(0), .12)}</div></div>`;
+    ev(T.L(0), 'slam');
+    const td = T.n > 1 ? T.L(1) : T.L(0, 1.3);
+    const panel = (x, side, t, anim, chipCls) => `<div class="media" style="left:${x}px;top:680px;width:450px;height:520px;border-radius:20px;border:3px solid ${side.on ? 'var(--acc)' : 'var(--fg)'}"${A(anim, t, .6)}>${mediaTag(side.media, k)}
+      <div class="abs" style="left:18px;top:18px"><span class="chip ${chipCls}">${esc(side.rotulo || '')}</span></div></div>`;
+    h += panel(80, sc.antes, T.L(0, .45), 'up', '');
+    h += panel(550, {...sc.depois, on: true}, td, 'wipeL', 'on');
+    ev(T.L(0, .45), 'whoosh'); ev(td, 'whoosh'); ev(td + .5, 'pop');
+    if (sc.comando) { const tc = T.E(T.n - 1, -.3); h += `<div class="abs" style="left:80px;top:1230px;display:flex;align-items:center;gap:26px"><span class="pill mono" style="font-size:34px;padding:14px 30px;text-transform:none"${A('pop', tc)}>${esc(sc.comando)}</span><span style="font-size:28px;font-weight:500;color:var(--sub)"${A('fade', tc + .3)}>${fmt(sc.nota || '')}</span></div>`; ev(tc, 'pop'); }
+    return h;
+  },
+  palavra(sc, k, T) {
+    let h = '', hasM = !!sc.media;
+    if (sc.kicker) h += `<div class="abs mono sub" style="left:80px;top:360px;font-size:26px"${A('wipeL', T.S(.15), .6)}>${esc(sc.kicker)}</div>`;
+    if (hasM) h += `<div class="media" style="left:330px;top:410px;width:420px;height:420px;border-radius:50%;border:6px solid var(--acc)"${A('pop', T.S(.15), .6)}>${mediaTag(sc.media, k)}</div>`;
+    let after = T.S(), times = [];
+    sc.palavras.forEach((p, i) => { const t = findWord(k, p, after); times.push(t ?? T.L(0, .4 + i * .6)); after = times[i] + .01; });
+    sc.palavras.forEach((p, i) => {
+      const t = times[i] - .05, top = hasM ? 880 : 640;
+      h += `<div class="abs anton acc" style="left:0;width:1080px;top:${top}px;text-align:center;font-size:${sc.tamanho || Math.round(Math.min(hasM ? 300 : 340, 900 / (p.length * .5)))}px"${A('slam', t, .38)}${i < times.length - 1 ? ` data-x="${(times[i + 1] - .06).toFixed(3)}"` : ''}>${esc(p)}</div>`;
+      ev(t, 'slam');
+    });
+    if (sc.serif) h += `<div class="abs serif" style="left:80px;width:920px;top:${hasM ? 1190 : 1010}px;text-align:center;font-size:84px;line-height:1"${A('up', times[times.length - 1] + .45)}>${fmt(sc.serif)}</div>`;
+    return h;
+  },
+  dia(sc, k, T) {
+    let h = `<div class="abs anton" style="left:76px;top:350px;font-size:250px;line-height:.85"${A('slam', T.S(.2), .45)}>Dia ${esc(sc.dia)}<span class="sub" style="font-size:100px">/${esc(sc.total)}</span></div>`;
+    ev(T.S(.2), 'slam');
+    if (sc.etiqueta) h += `<div class="abs mono acc" style="left:80px;top:590px;font-size:26px"${A('wipeL', T.S(.5))}>${esc(sc.etiqueta)}</div>`;
+    const N = Math.min(+sc.total, 50), F = Math.round(+sc.dia * N / +sc.total), t0 = T.L(0, .2);
+    let dots = ''; for (let i = 0; i < N; i++) dots += `<i style="display:block;width:16px;height:16px;border-radius:3px;background:var(--line)"${i < F ? A('on', t0 + i * .05, .01) : ''}></i>`;
+    for (let i = 0; i < F; i += 3) ev(t0 + i * .05, 'tick');
+    h += `<div class="abs" style="left:80px;top:650px;width:920px;display:grid;grid-template-columns:repeat(25,1fr);gap:10px 22px">${dots}</div>`;
+    let y = 740;
+    if (sc.media) { h += `<div class="media" style="left:80px;top:740px;width:920px;height:440px;border-radius:22px"${A('up', T.L(0, .5))}>${mediaTag(sc.media, k)}</div>`; y = 1210; }
+    h += `<div class="col" style="top:${y}px;gap:18px">`;
+    const n = sc.itens.length;
+    sc.itens.forEach((it, j) => { const t = itemTime(T, sc, j, n); ev(t, 'pop');
+      h += `<div style="display:flex;gap:18px;align-items:center;font-weight:700;font-size:34px"${A('up', t - .15, .45)}><i style="position:relative;width:40px;height:40px;border-radius:10px;border:3px solid var(--acc)"><b style="position:absolute;inset:4px;border-radius:5px;background:var(--acc)"${A('check', t + .1, .35)}></b></i>${fmt(it.texto ?? it)}</div>`; });
+    return h + `</div>`;
+  },
+  cta(sc, k, T) {
+    const th = TH[sc.tema || 'escuro'];
+    let h = `<div class="abs" style="left:420px;top:380px;width:240px;height:240px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 8px var(--acc)"${A('pop', T.S(.15), .6)}><img src="${th.logo}" style="width:100%;height:100%"></div>`;
+    h += `<div class="abs anton" style="left:0;width:1080px;top:690px;text-align:center;font-size:${sc.tamanho || 120}px">${words(sc.titulo, T.L(0), .1)}</div>`;
+    ev(T.L(0), 'slam');
+    if (sc.palavraChave) {
+      const t = (findWord(k, sc.chaveFalada || sc.palavraChave) ?? T.L(T.n - 1, .3)) - .05;
+      h += `<div class="abs" style="left:0;width:1080px;top:860px;text-align:center"><span class="anton pill" style="font-size:180px;padding:18px 60px 6px"${A('slam', t, .45)}>${esc(sc.palavraChave)}</span></div>`;
+      ev(t, 'impact');
+    }
+    if (sc.texto) h += `<div class="abs serif" style="left:80px;width:920px;top:1100px;text-align:center;font-size:64px;line-height:1.02"${A('up', T.L(0, 1.2))}>${fmt(sc.texto)}</div>`;
+    if (sc.botoes) h += `<div class="abs" style="left:80px;right:80px;top:1230px;display:flex;gap:18px">` + sc.botoes.map((b, i) =>
+      `<div style="flex:1"${A('pop', T.E(T.n - 1, -.4 + i * .2))}><div class="anton" style="text-align:center;font-size:56px;padding:18px 0 12px;border-radius:999px;${i ? 'background:var(--acc);color:#000' : 'border:3px solid var(--fg)'}" data-pulse="${T.E(T.n - 1, .3 + i * .3).toFixed(3)}">${esc(b)}</div></div>`).join('') + `</div>`;
+    return h;
+  },
+};
+
+// ---------- montagem ----------
+const stage = document.getElementById('stage'), fx = document.getElementById('fx');
+const TRANS = ['wipeUp', 'sweep', 'circle', 'slideIn', 'wipeL', 'sweep', 'zoomIn'];
+R.cenas.forEach((sc, k) => {
+  const tema = sc.tema || (sc.tipo === 'forte' || sc.tipo === 'cta' ? 'escuro' : R.tema || 'claro'), th = TH[tema];
+  sc._tema = tema;
+  const T = timer(k), sec = document.createElement('section');
+  sec.className = 'scene';
+  Object.entries(th).forEach(([a, b]) => typeof b === 'string' && sec.style.setProperty('--' + a, b));
+  sec.style.setProperty('--grain', th.grain);
+  sec.style.zIndex = k + 1;
+  sec.innerHTML = `<div class="grain"></div>` + TYPES[sc.tipo](sc, k, T) + chrome(k, th);
+  const s = SCN[k].s, tr = sc.transicao || TRANS[(k - 1) % TRANS.length];
+  sec.dataset.anim = '';
+  if (k) {
+    if (tr === 'sweep') {
+      const sw = document.createElement('div'); sw.className = 'sweep'; fx.appendChild(sw);
+      sw.style.animation = `sweep .75s cubic-bezier(.65,0,.35,1) ${s - .4}s both`;
+      sec.style.animation = `cut .01s linear ${s}s both`;
+    } else sec.style.animation = `${tr} .6s ${EASE} ${s}s both`;
+    ev(s - .12, 'whoosh');
+  }
+  if (k < R.cenas.length - 1) sec.style.animation += `${sec.style.animation ? ',' : ''}hide 1s linear ${SCN[k + 1].s + .8}s forwards`;
+  stage.insertBefore(sec, fx);
+  sec.querySelectorAll('img[data-kb]').forEach(im => im.style.animation = `kb ${SCN[k].e - s + .8}s linear ${Math.max(0, s - .2)}s both`);
+});
+const add = (el, s) => { el.style.animation = el.style.animation ? el.style.animation + ',' + s : s; };
+document.querySelectorAll('[data-a]').forEach(el => {
+  const a = el.dataset.a, d = el.dataset.d || (a === 'slam' ? .36 : a === 'pop' ? .4 : .6);
+  add(el, `${a} ${d}s ${el.dataset.ease || (a === 'cut' || a === 'on' ? 'linear' : EASE)} ${el.dataset.t}s both`);
+});
+document.querySelectorAll('[data-x]').forEach(el => add(el, `hide 1s linear ${el.dataset.x}s forwards`));
+document.querySelectorAll('[data-pulse]').forEach(el => add(el, `pulse .55s ease-in-out ${el.dataset.pulse}s 2`));
+document.querySelectorAll('[data-act]').forEach(el => { add(el, `act ${el.dataset.actd}s linear ${el.dataset.act}s`); add(el.parentElement, `dim .4s linear ${(+el.dataset.act + +el.dataset.actd).toFixed(3)}s forwards`); });
+EVENTS.filter(e => e.k === 'impact').forEach(e => { const f = document.createElement('div'); f.className = 'flash'; f.style.animation = `flash .35s ease-out ${e.t}s forwards`; f.style.opacity = 0; fx.appendChild(f); });
+
+// legendas com palavra destacada
+const caps = document.getElementById('caps');
+CUES.forEach((c, i) => {
+  if (!c.cap) return;
+  const el = document.createElement('div'); el.className = 'cap ' + R.cenas[c.k]._tema;
+  const nx = CUES[i + 1], end = nx ? Math.min(nx.s - .02, c.e + .35) : c.e + .8;
+  el.innerHTML = WT[i].map((x, j) => { const tn = j < WT[i].length - 1 ? WT[i][j + 1].t : c.e;
+    return `<i style="animation:hl ${(tn - x.t).toFixed(3)}s linear ${x.t.toFixed(3)}s">${esc(x.w)}</i>`; }).join(' ');
+  add(el, `capIn .18s ${EASE} ${c.s}s both`); add(el, `hide 1s linear ${end}s forwards`);
+  caps.appendChild(el);
+});
+
+window.EVENTS = EVENTS;
+const vids = [...document.querySelectorAll('video')];
+window.seek = t => {
+  document.getAnimations().forEach(a => { a.currentTime = t * 1000; });
+  return Promise.all(vids.map(v => new Promise(res => {
+    const target = Math.max(0, Math.min((v.duration || 1e9) - .05, t - +v.dataset.vs));
+    if (Math.abs(v.currentTime - target) < .001) return res();
+    const done = () => { v.removeEventListener('seeked', done); res(); };
+    v.addEventListener('seeked', done); v.currentTime = target; setTimeout(done, 3000);
+  })));
+};
+window.ready = Promise.all([document.fonts.ready, ...vids.map(v => v.readyState >= 1 ? 0 : new Promise(r => { v.onloadedmetadata = r; setTimeout(r, 5000); }))]);
+seek(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+{
+  "titulo": "12 posts por dia sem editor de vídeo",
+  "conta": "tugabossdigital",
+  "tema": "claro",
+  "cenas": [
+    {
+      "tipo": "capa",
+      "kicker": "Tuga Boss · Bastidor",
+      "titulo": "12 posts\npor dia.",
+      "tamanho": 170,
+      "pilula": "Zero editor de vídeo",
+      "cartas": ["img/modelo-6.png", "img/modelo-8.png", "img/modelo-10.png"],
+      "fala": [
+        {"say": "Doze posts por dia na Tuga Boss.", "cap": "12 posts por dia na Tuga Boss."},
+        {"say": "E ninguém abre um editor de vídeo.", "cap": "E ninguém abre um editor de vídeo."}
+      ]
+    },
+    {
+      "tipo": "forte",
+      "rotulo": "A grade diária",
+      "numero": "12",
+      "titulo": "posts, _todos diferentes._",
+      "texto": "2 carrosséis + 10 Reels",
+      "fala": [
+        {"say": "São dois carrosséis e dez Ríls por dia, todos diferentes.", "cap": "São 2 carrosséis e 10 Reels por dia, todos diferentes."}
+      ]
+    },
+    {
+      "tipo": "lista",
+      "numero": "4",
+      "titulo": "etapas",
+      "subtitulo": "no Claude",
+      "itens": ["Pesquisa dos virais", "Texto com os *cérebros*", "Design e vídeo", "Mesa: fica *pendente*"],
+      "fala": [
+        "Primeiro, o Claude pesquisa os virais do dia.",
+        "Depois escreve cada post com os cérebros de marketing.",
+        "Monta o design e edita o vídeo sozinho.",
+        "E sobe tudo na Mesa, como pendente."
+      ]
+    },
+    {
+      "tipo": "tela",
+      "janela": "claude · modelos tuga boss",
+      "media": "img/tela-modelos.mp4",
+      "etiqueta": "Fábrica Tuga · Design",
+      "texto": "6 MODELOS\nCLARO E ESCURO",
+      "serif": "a marca nunca muda.",
+      "fala": [
+        "O design segue seis modelos fixos, em versão clara e escura.",
+        "Por isso a marca nunca muda."
+      ]
+    },
+    {
+      "tipo": "antesdepois",
+      "titulo": "Um código.\n*Um slide.*",
+      "antes": {"media": "img/antes-codigo.png", "rotulo": "Antes"},
+      "depois": {"media": "img/modelo-8.png", "rotulo": "Depois"},
+      "comando": "gen.py",
+      "nota": "→ PNG 1080×1350",
+      "fala": [
+        "Antes, é só código.",
+        "Depois, o slide pronto, em alta resolução."
+      ]
+    },
+    {
+      "tipo": "palavra",
+      "kicker": "E o dono?",
+      "palavras": ["Só", "aprova."],
+      "serif": "um por um, no celular.",
+      "fala": [
+        "E o dono? Só aprova. Um por um, no celular."
+      ]
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Quer aprender?",
+      "palavraChave": "CLAUDE",
+      "chaveFalada": "Clóde",
+      "texto": "carrosséis virais _só com o Claude_",
+      "botoes": ["Salvar", "CLAUDE"],
+      "fala": [
+        {"say": "Quer aprender a fazer carrosséis assim, só com o Clóde?", "cap": "Quer aprender a fazer carrosséis assim, só com o Claude?"},
+        {"say": "Comenta Clóde aqui embaixo.", "cap": "Comenta CLAUDE aqui embaixo."}
+      ]
+    }
+  ]
+}
