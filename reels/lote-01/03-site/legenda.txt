@@ -1,0 +1,10 @@
+Site animado com o Claude Code, em 4 passos.
+
+1. Instale o Claude Code com um comando.
+2. Descreva o site como falaria com um designer.
+3. Peça animações de entrada, de rolagem e nos botões.
+4. Mande prints do que não gostou e peça os ajustes.
+
+Comenta SITE que eu te mando os comandos e os prompts de cada passo.
+
+Comandos atualizados: docs.claude.com

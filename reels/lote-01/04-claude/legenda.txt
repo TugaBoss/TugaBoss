@@ -1,0 +1,7 @@
+O seu Claude está no modo básico?
+
+Oito ajustes tiram ele de lá: projetos, instruções fixas, estilo de escrita, skills, conectores, artifacts, pesquisa e Claude Code.
+
+Quantos você já ativou? Conta aqui.
+
+Comenta CLAUDE que eu te mando o passo a passo de cada ajuste.

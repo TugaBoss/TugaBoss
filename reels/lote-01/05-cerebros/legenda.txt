@@ -1,0 +1,7 @@
+Um conselho de marketing dentro do Claude.
+
+Na Tuga Boss, cada cérebro responde uma pergunta: oferta e preço, onde postar, quais palavras usar e para quem é a marca.
+
+O valor não está na resposta de um deles. Está em ver onde eles discordam.
+
+Comenta CEREBROS que eu te mando o prompt do conselho e os 4 documentos-base.

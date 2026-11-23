@@ -1,0 +1,70 @@
+{
+ "titulo": "O seu Claude está no modo básico?",
+ "ref": "ref4",
+ "palavraChave": "CLAUDE",
+ "tema": "claro",
+ "cenas": [
+  {
+   "tipo": "medidor",
+   "titulo": "Seu Claude está\nno _modo básico?_",
+   "tamanho": 110,
+   "itens": [
+    "Projetos",
+    "Instruções fixas",
+    "Estilo de escrita",
+    "Skills",
+    "Conectores",
+    "Artifacts",
+    "Pesquisa",
+    "Claude Code"
+   ],
+   "fala": [
+    {
+     "say": "O seu Clóde está no modo básico? Ative estes oito.",
+     "cap": "O seu Claude está no modo básico? Ative estes oito."
+    },
+    "Projetos, um para cada cliente.",
+    "Instruções fixas dentro do projeto.",
+    "Um estilo de escrita com a sua voz.",
+    "Skills para as tarefas que se repetem.",
+    "Conectores com o Gmail e o Drive.",
+    "Artifacts para páginas e ferramentas.",
+    "Pesquisa, para fatos com fonte.",
+    {
+     "say": "E o Clóde Code, para automatizar.",
+     "cap": "E o Claude Code, para automatizar."
+    }
+   ]
+  },
+  {
+   "tipo": "forte",
+   "rotulo": "Resultado",
+   "numero": "8",
+   "titulo": "ajustes. _Modo completo._",
+   "fala": [
+    {
+     "say": "Com os oito ativos, o seu Clóde sai do modo básico.",
+     "cap": "Com os oito ativos, o seu Claude sai do modo básico."
+    }
+   ]
+  },
+  {
+   "tipo": "cta",
+   "titulo": "Quer o passo a passo?",
+   "tamanho": 104,
+   "palavraChave": "CLAUDE",
+   "texto": "_como ativar_ cada um dos 8",
+   "botoes": [
+    "Salvar",
+    "CLAUDE"
+   ],
+   "fala": [
+    "Quer o passo a passo de cada ajuste?",
+    {
+     "say": "Comenta Clóde que eu te mando.",
+     "cap": "Comenta CLAUDE que eu te mando."
+    }
+   ]
+  }
+ ]
+}

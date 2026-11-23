@@ -1,0 +1,119 @@
+{
+ "titulo": "Site animado com o Claude Code",
+ "ref": "ref3",
+ "palavraChave": "SITE",
+ "tema": "claro",
+ "cenas": [
+  {
+   "tipo": "capa",
+   "kicker": "Claude Code · Tutorial",
+   "titulo": "Site animado\ncom o *Claude Code.*",
+   "tamanho": 108,
+   "pilula": "Em 4 passos",
+   "terminal": {
+    "janela": "terminal",
+    "linhas": [
+     "> crie a landing page da Barbearia Exemplo",
+     "✓ index.html criado",
+     "✓ animações de entrada"
+    ]
+   },
+   "fala": [
+    {
+     "say": "Um site animado, feito pelo Clóde Code.",
+     "cap": "Um site animado, feito pelo Claude Code."
+    },
+    "Em quatro passos."
+   ]
+  },
+  {
+   "tipo": "passo",
+   "n": "1",
+   "de": "4",
+   "titulo": "Instale",
+   "texto": "o Claude Code, com um comando no terminal.",
+   "terminal": {
+    "janela": "terminal",
+    "linhas": [
+     "$ npm install -g @anthropic-ai/claude-code",
+     "✓ instalado"
+    ]
+   },
+   "fala": [
+    {
+     "say": "Primeiro, instale o Clóde Code no terminal, com um comando.",
+     "cap": "Primeiro, instale o Claude Code no terminal, com um comando."
+    }
+   ]
+  },
+  {
+   "tipo": "passo",
+   "n": "2",
+   "de": "4",
+   "titulo": "Descreva",
+   "texto": "o site, como falaria com um designer.",
+   "terminal": {
+    "janela": "minha-barbearia",
+    "linhas": [
+     "$ claude",
+     "> landing page para barbearia, com preços e agenda",
+     "✓ estrutura pronta"
+    ]
+   },
+   "fala": [
+    "Segundo, abra o Claude na pasta do projeto e descreva o site."
+   ]
+  },
+  {
+   "tipo": "passo",
+   "n": "3",
+   "de": "4",
+   "titulo": "Anime",
+   "texto": "entrada, rolagem e botões.",
+   "terminal": {
+    "janela": "minha-barbearia",
+    "linhas": [
+     "> use animações suaves de entrada e de rolagem",
+     "✓ animações adicionadas"
+    ]
+   },
+   "fala": [
+    "Terceiro, peça animações: de entrada, de rolagem e nos botões."
+   ]
+  },
+  {
+   "tipo": "passo",
+   "n": "4",
+   "de": "4",
+   "titulo": "Ajuste",
+   "texto": "mande um print do que não gostou.",
+   "terminal": {
+    "janela": "minha-barbearia",
+    "linhas": [
+     "> [print] o título ficou pequeno no celular",
+     "✓ título ajustado no celular"
+    ]
+   },
+   "fala": [
+    "Quarto, mande prints do que não gostou e peça os ajustes."
+   ]
+  },
+  {
+   "tipo": "cta",
+   "titulo": "Quer o guia?",
+   "palavraChave": "SITE",
+   "texto": "_comandos e prompts_ dos 4 passos",
+   "botoes": [
+    "Salvar",
+    "SITE"
+   ],
+   "fala": [
+    "Quer os comandos e os prompts de cada passo?",
+    {
+     "say": "Comenta saite que eu te mando.",
+     "cap": "Comenta SITE que eu te mando."
+    }
+   ]
+  }
+ ]
+}

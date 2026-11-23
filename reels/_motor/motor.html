@@ -96,6 +96,7 @@ const TH = {
   escuro: {bg:'#000000', fg:'#E6E5C7', sub:'#B9B79A', acc:'#FF4E08', onacc:'#000000', card:'#1C1B14', line:'rgba(230,229,199,.2)', grain:.05, logo:'marca/logo_clara.png'},
 };
 const EASE = 'cubic-bezier(.16,1,.3,1)';
+const MEDIDORES = [];
 const EVENTS = []; const ev = (t, k) => EVENTS.push({t: +(+t).toFixed(3), k});
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const fmt = s => esc(s).replace(/_(.+?)_/g, '<span class="serif acc">$1</span>').replace(/\*(.+?)\*/g, '<span class="acc">$1</span>').replace(/\n/g, '<br>');
@@ -151,6 +152,42 @@ function chrome(k, th) {
     <div class="abs cnt">${String(k + 1).padStart(2, '0')}/${String(n).padStart(2, '0')}</div>`;
 }
 
+// ---------- caixas: chat e terminal (ilustrações) ----------
+function spread(t0, t1, n) { return Array.from({length: n}, (_, i) => n === 1 ? t0 : t0 + (t1 - t0) * i / (n - 1)); }
+function typed(txt, t0, span, evk = 'type') {
+  const cps = Math.min(.045, span / Math.max(1, txt.length));
+  return [...txt].map((c, i) => { if (i % 3 === 0 && c.trim()) ev(t0 + i * cps, evk); return `<span${A('cut', t0 + i * cps, .01)} style="visibility:hidden">${esc(c)}</span>`; }).join('');
+}
+function chatBox(c, top, h, tq, tr) {
+  let b = `<div class="abs card" style="left:80px;top:${top}px;width:920px;${h ? `height:${h}px;` : ''}overflow:hidden;border:2px solid var(--line)"${A('up', tq - .5, .6)}>
+    <div style="height:56px;display:flex;align-items:center;gap:12px;padding:0 24px;border-bottom:2px solid var(--line)"><i style="width:18px;height:18px;border-radius:50%;background:var(--acc)"></i>
+    <span class="mono" style="font-size:20px">${esc(c.janela || 'Claude')}</span><span class="mono sub" style="margin-left:auto;font-size:16px;opacity:.7">ilustração</span></div>
+    <div style="padding:26px 28px;display:flex;flex-direction:column;gap:18px">
+    <div style="align-self:flex-end;max-width:720px;background:var(--fg);color:var(--bg);border-radius:22px 22px 6px 22px;padding:20px 26px;font-size:${h ? 30 : 38}px;font-weight:600;line-height:1.3">${typed(c.pergunta || '', tq, 1.4)}</div>`;
+  (c.resposta || []).forEach((r, i) => { ev(tr[i], 'pop');
+    b += `<div style="display:flex;gap:16px;align-items:flex-start;font-size:${h ? 31 : 42}px;font-weight:700;line-height:1.25"${A('up', tr[i], .45)}><span class="acc" style="font-family:Mono">✓</span><span>${fmt(r)}</span></div>`; });
+  return b + `</div></div>`;
+}
+function termBox(c, top, h, times) {
+  let b = `<div class="abs" style="left:80px;top:${top}px;width:920px;height:${h}px;overflow:hidden;border-radius:22px;background:#12110D;color:#E6E5C7;box-shadow:16px 16px 0 var(--acc)"${A('up', times[0] - .5, .6)}>
+    <div style="height:54px;display:flex;align-items:center;gap:12px;padding:0 22px;border-bottom:2px solid #2a2920">
+    <i style="width:16px;height:16px;border-radius:50%;background:#FF4E08"></i><i style="width:16px;height:16px;border-radius:50%;background:#4a483a"></i><i style="width:16px;height:16px;border-radius:50%;background:#4a483a"></i>
+    <span class="mono" style="margin-left:16px;font-size:18px;color:#B9B79A">${esc(c.janela || 'terminal')}</span><span class="mono" style="margin-left:auto;font-size:16px;color:#6b6957">ilustração</span></div>
+    <div style="padding:24px 26px;font-family:Mono;font-weight:500;font-size:29px;line-height:1.45;white-space:pre-wrap;word-break:break-word">`;
+  (c.linhas || []).forEach((l, i) => {
+    const t = times[i], cmd = /^[$>]/.test(l);
+    b += `<div style="${/^✓/.test(l) ? 'color:#FF4E08' : cmd ? 'color:#E6E5C7' : 'color:#B9B79A'}">${cmd ? typed(l, t, .9) : `<span${A('fade', t, .25)}>${esc(l)}</span>`}</div>`;
+    if (!cmd) ev(t, 'tick');
+  });
+  return b + `</div></div>`;
+}
+function visual(sc, k, top, h, t0, t1) {
+  if (sc.chat) { const n = (sc.chat.resposta || []).length; return chatBox(sc.chat, top, h, t0, spread(t0 + 1.6, Math.max(t0 + 1.7, t1), n)); }
+  if (sc.terminal) return termBox(sc.terminal, top, h, spread(t0, Math.max(t0 + .3, t1), sc.terminal.linhas.length));
+  if (sc.media) return `<div class="media" style="left:80px;top:${top}px;width:920px;height:${h}px;border-radius:22px"${A('up', t0 - .3)}>${mediaTag(sc.media, k)}</div>`;
+  return '';
+}
+
 // ---------- tipos de cena ----------
 const TYPES = {
   capa(sc, k, T) {
@@ -164,6 +201,8 @@ const TYPES = {
       const n = sc.cartas.length, rot = n === 3 ? [-9, 0, 9] : n === 2 ? [-6, 6] : [0], dx = n === 3 ? [-250, 0, 250] : n === 2 ? [-150, 150] : [0];
       sc.cartas.forEach((m, i) => { const t = T.L(0, .55 + i * .2); ev(t, 'pop');
         h += `<div class="media" style="left:${540 - 180 + dx[i]}px;top:${i === 1 ? 860 : 900}px;width:360px;height:450px;border-radius:18px;border:3px solid var(--fg);box-shadow:14px 14px 0 var(--acc);--r:${rot[i]}deg;z-index:${i === 1 ? 3 : 2}"${A('deal', t, .7)}>${mediaTag(m, k, false)}</div>`; });
+    } else if (sc.chat || sc.terminal) {
+      h += visual(sc, k, 860, 470, T.L(0, .6), T.E(T.n - 1, -.4));
     } else if (sc.media) {
       h += `<div class="media" style="left:170px;top:880px;width:740px;height:700px;border-radius:370px 370px 0 0"${A('archUp', T.L(0, .4), .9)}>${mediaTag(sc.media, k)}</div>`;
     }
@@ -240,8 +279,9 @@ const TYPES = {
     if (sc.kicker) h += `<div class="abs mono sub" style="left:80px;top:360px;font-size:26px"${A('wipeL', T.S(.15), .6)}>${esc(sc.kicker)}</div>`;
     if (hasM) h += `<div class="media" style="left:330px;top:410px;width:420px;height:420px;border-radius:50%;border:6px solid var(--acc)"${A('pop', T.S(.15), .6)}>${mediaTag(sc.media, k)}</div>`;
     let after = T.S(), times = [];
-    sc.palavras.forEach((p, i) => { const t = findWord(k, p, after); times.push(t ?? T.L(0, .4 + i * .6)); after = times[i] + .01; });
-    sc.palavras.forEach((p, i) => {
+    const PW = sc.palavras.map(p => typeof p === 'string' ? {fala: p, texto: p} : p);
+    PW.forEach((p, i) => { const t = findWord(k, p.fala, after); times.push(t ?? T.L(0, .4 + i * .6)); after = times[i] + .01; });
+    PW.forEach(({texto: p}, i) => {
       const t = times[i] - .05, top = hasM ? 880 : 640;
       h += `<div class="abs anton acc" style="left:0;width:1080px;top:${top}px;text-align:center;font-size:${sc.tamanho || Math.round(Math.min(hasM ? 300 : 340, 900 / (p.length * .5)))}px"${A('slam', t, .38)}${i < times.length - 1 ? ` data-x="${(times[i + 1] - .06).toFixed(3)}"` : ''}>${esc(p)}</div>`;
       ev(t, 'slam');
@@ -265,6 +305,48 @@ const TYPES = {
       h += `<div style="display:flex;gap:18px;align-items:center;font-weight:700;font-size:34px"${A('up', t - .15, .45)}><i style="position:relative;width:40px;height:40px;border-radius:10px;border:3px solid var(--acc)"><b style="position:absolute;inset:4px;border-radius:5px;background:var(--acc)"${A('check', t + .1, .35)}></b></i>${fmt(it.texto ?? it)}</div>`; });
     return h + `</div>`;
   },
+  passo(sc, k, T) {
+    let h = `<div class="abs mono acc" style="left:80px;top:360px;font-size:26px"${A('wipeL', T.S(.15), .5)}>Passo ${esc(sc.n)} de ${esc(sc.de)}</div>`;
+    h += `<div class="abs anton acc" style="left:62px;top:400px;font-size:400px;line-height:.82"${A('slam', T.S(.2), .45)}>${esc(sc.n)}</div>`; ev(T.S(.2), 'slam');
+    h += `<div class="abs" style="left:${String(sc.n).length > 1 ? 420 : 320}px;right:80px;top:420px">
+      <div class="anton" style="font-size:${sc.tamanho || 100}px">${words(sc.titulo, T.L(0), .09, 'up', .5)}</div>
+      ${sc.texto ? `<div style="margin-top:20px;font-size:36px;font-weight:600;color:var(--sub);line-height:1.25"${A('up', T.L(0, .6))}>${fmt(sc.texto)}</div>` : ''}</div>`;
+    return h + visual(sc, k, 800, 520, T.L(0, .9), T.E(T.n - 1, -.5));
+  },
+  chat(sc, k, T) {
+    let h = sc.etiqueta ? `<div class="abs mono acc" style="left:80px;top:360px;font-size:26px"${A('wipeL', T.S(.15), .5)}>${esc(sc.etiqueta)}</div>` : '';
+    const n = sc.chat.resposta.length, t1 = T.n > 1 ? T.L(1) : T.L(0, 1.8);
+    return h + chatBox(sc.chat, 430, 0, T.L(0, .2), spread(t1, Math.max(t1 + .2, T.E(T.n - 1, -.6)), n));
+  },
+  terminal(sc, k, T) {
+    let h = sc.etiqueta ? `<div class="abs mono acc" style="left:80px;top:360px;font-size:26px"${A('wipeL', T.S(.15), .5)}>${esc(sc.etiqueta)}</div>` : '';
+    return h + termBox(sc.terminal, 420, 880, spread(T.L(0, .2), T.E(T.n - 1, -.6), sc.terminal.linhas.length));
+  },
+  medidor(sc, k, T) {
+    let h = `<div class="col" style="top:360px"><div class="anton" style="font-size:${sc.tamanho || 104}px;width:920px">${words(sc.titulo, T.L(0), .1)}</div></div>`;
+    ev(T.L(0), 'slam');
+    const N = sc.itens.length, cx = 540, cy = 1090, r = 380, times = sc.itens.map((_, j) => itemTime(T, sc, j, N));
+    const ang = j => -90 + 180 * j / N, css = [];
+    let arcs = '';
+    h += `<svg class="abs" style="left:0;top:0;width:1080px;height:1920px;overflow:visible" viewBox="0 0 1080 1920">
+      <path d="M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy}" fill="none" stroke="var(--line)" stroke-width="54" stroke-linecap="round"/>
+      <path id="arc${k}" d="M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy}" pathLength="100" fill="none" stroke="var(--acc)" stroke-width="54" stroke-linecap="round" stroke-dasharray="100" style="stroke-dashoffset:100"/>
+      ${Array.from({length: N + 1}, (_, j) => { const a = (ang(j) - 90) * Math.PI / 180; return `<line x1="${cx + (r - 70) * Math.cos(a)}" y1="${cy + (r - 70) * Math.sin(a)}" x2="${cx + (r - 46) * Math.cos(a)}" y2="${cy + (r - 46) * Math.sin(a)}" stroke="var(--sub)" stroke-width="5"/>`; }).join('')}
+      <text x="${cx - r - 10}" y="${cy + 70}" font-family="Mono" font-weight="700" font-size="30" fill="var(--sub)">BÁSICO</text>
+      <text x="${cx + r - 140}" y="${cy + 70}" font-family="Mono" font-weight="700" font-size="30" fill="var(--acc)">COMPLETO</text></svg>`;
+    h += `<div class="abs" id="nd${k}" style="left:${cx - 7}px;top:${cy - 320}px;width:14px;height:320px;border-radius:7px;background:var(--fg);transform-origin:50% 100%;transform:rotate(-90deg)"></div>
+      <div class="abs" style="left:${cx - 30}px;top:${cy - 30}px;width:60px;height:60px;border-radius:50%;background:var(--fg)"></div>`;
+    times.forEach((t, j) => {
+      css.push(`@keyframes nd${k}_${j}{from{transform:rotate(${ang(j)}deg)}to{transform:rotate(${ang(j + 1)}deg)}}`, `@keyframes ar${k}_${j}{from{stroke-dashoffset:${100 - 100 * j / N}}to{stroke-dashoffset:${100 - 100 * (j + 1) / N}}}`);
+      ev(t, 'tick');
+      const tn = j < N - 1 ? times[j + 1] : T.end + 1;
+      h += `<div class="abs anton" style="left:0;width:1080px;top:${cy + 100}px;text-align:center;font-size:130px;line-height:1"${A('cut', t, .01)} data-x="${tn.toFixed(3)}">${j + 1}<span class="sub" style="font-size:60px">/${N}</span></div>`;
+      h += `<div class="abs anton acc" style="left:0;width:1080px;top:${cy - r - 120}px;text-align:center;font-size:${sc.tamItem || 64}px"${A('up', t, .35)} data-x="${tn.toFixed(3)}">${fmt(sc.itens[j].texto ?? sc.itens[j])}</div>`;
+    });
+    h += `<div class="abs anton" style="left:0;width:1080px;top:${cy + 100}px;text-align:center;font-size:130px;line-height:1" data-x="${times[0].toFixed(3)}">0<span class="sub" style="font-size:60px">/${N}</span></div>`;
+    MEDIDORES.push({k, times, css});
+    return h;
+  },
   cta(sc, k, T) {
     const th = TH[sc.tema || 'escuro'];
     let h = `<div class="abs" style="left:420px;top:380px;width:240px;height:240px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 8px var(--acc)"${A('pop', T.S(.15), .6)}><img src="${th.logo}" style="width:100%;height:100%"></div>`;
@@ -272,10 +354,10 @@ const TYPES = {
     ev(T.L(0), 'slam');
     if (sc.palavraChave) {
       const t = (findWord(k, sc.chaveFalada || sc.palavraChave) ?? T.L(T.n - 1, .3)) - .05;
-      h += `<div class="abs" style="left:0;width:1080px;top:860px;text-align:center"><span class="anton pill" style="font-size:180px;padding:18px 60px 6px"${A('slam', t, .45)}>${esc(sc.palavraChave)}</span></div>`;
+      h += `<div class="abs" style="left:0;width:1080px;top:860px;text-align:center"><span class="anton pill" style="font-size:${sc.tamPal || Math.min(180, Math.round(1500 / sc.palavraChave.length))}px;padding:18px 60px 6px"${A('slam', t, .45)}>${esc(sc.palavraChave)}</span></div>`;
       ev(t, 'impact');
     }
-    if (sc.texto) h += `<div class="abs serif" style="left:80px;width:920px;top:1100px;text-align:center;font-size:64px;line-height:1.02"${A('up', T.L(0, 1.2))}>${fmt(sc.texto)}</div>`;
+    if (sc.texto) h += `<div class="abs serif" style="left:80px;width:920px;top:1085px;text-align:center;font-size:54px;line-height:1.02"${A('up', T.L(0, 1.2))}>${fmt(sc.texto)}</div>`;
     if (sc.botoes) h += `<div class="abs" style="left:80px;right:80px;top:1230px;display:flex;gap:18px">` + sc.botoes.map((b, i) =>
       `<div style="flex:1"${A('pop', T.E(T.n - 1, -.4 + i * .2))}><div class="anton" style="text-align:center;font-size:56px;padding:18px 0 12px;border-radius:999px;${i ? 'background:var(--acc);color:#000' : 'border:3px solid var(--fg)'}" data-pulse="${T.E(T.n - 1, .3 + i * .3).toFixed(3)}">${esc(b)}</div></div>`).join('') + `</div>`;
     return h;
@@ -309,6 +391,11 @@ R.cenas.forEach((sc, k) => {
   sec.querySelectorAll('img[data-kb]').forEach(im => im.style.animation = `kb ${SCN[k].e - s + .8}s linear ${Math.max(0, s - .2)}s both`);
 });
 const add = (el, s) => { el.style.animation = el.style.animation ? el.style.animation + ',' + s : s; };
+MEDIDORES.forEach(({k, times, css}) => {
+  const st = document.createElement('style'); st.textContent = css.join('\n'); document.head.appendChild(st);
+  const nd = document.getElementById('nd' + k), arc = document.getElementById('arc' + k);
+  times.forEach((t, j) => { add(nd, `nd${k}_${j} .55s cubic-bezier(.3,1.6,.5,1) ${t}s forwards`); add(arc, `ar${k}_${j} .55s ${EASE} ${t}s forwards`); });
+});
 document.querySelectorAll('[data-a]').forEach(el => {
   const a = el.dataset.a, d = el.dataset.d || (a === 'slam' ? .36 : a === 'pop' ? .4 : .6);
   add(el, `${a} ${d}s ${el.dataset.ease || (a === 'cut' || a === 'on' ? 'linear' : EASE)} ${el.dataset.t}s both`);

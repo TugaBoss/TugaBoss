@@ -4,3 +4,16 @@ reels/*/out/sheet*.png
 reels/*/audio/musica.wav
 reels/*/audio/efeitos.wav
 reels/*/audio/events.json
+# conteúdo de terceiros (referências) — fica só na sessão
+reels/_referencias/*.mp4
+reels/_referencias/*.txt
+reels/_referencias/sheet*.png
+# iscas: o repositório é público, então o material das palavras-chave não sobe
+reels/*/*/material.json
+reels/*/*/out/*.pdf
+reels/*/*/out/material*
+reels/*/*/.cache/
+reels/*/*/out/still-*.png
+reels/*/*/audio/musica.wav
+reels/*/*/audio/efeitos.wav
+reels/*/*/audio/events.json

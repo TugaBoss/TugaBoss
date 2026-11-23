@@ -1,0 +1,119 @@
+{
+ "titulo": "Do Google Maps ao cliente",
+ "ref": "ref1",
+ "palavraChave": "PAGINA",
+ "tema": "claro",
+ "cenas": [
+  {
+   "tipo": "capa",
+   "kicker": "Método · Prospecção",
+   "titulo": "Do Google Maps\nao *cliente.*",
+   "tamanho": 118,
+   "pilula": "Com a página pronta",
+   "chat": {
+    "janela": "Claude",
+    "pergunta": "Use estas avaliações do Google e crie uma página para a Padaria Exemplo.",
+    "resposta": [
+     "Página de uma tela, com WhatsApp",
+     "Avaliações viraram depoimentos"
+    ]
+   },
+   "fala": [
+    "Do Google Maps ao cliente, com a página já pronta.",
+    "É assim que se vende site sem parecer vendedor."
+   ]
+  },
+  {
+   "tipo": "palavra",
+   "kicker": "A prospecção normal",
+   "palavras": [
+    {
+     "fala": "promessa",
+     "texto": "Promessa."
+    }
+   ],
+   "serif": "“eu faço sites, quer um?”",
+   "fala": [
+    "A prospecção normal é só promessa: eu faço sites, quer um?"
+   ]
+  },
+  {
+   "tipo": "lista",
+   "numero": "3",
+   "titulo": "filtros",
+   "subtitulo": "no Google Maps",
+   "itens": [
+    "Nota *alta*",
+    "*Muitas* avaliações",
+    "*Sem site* no perfil"
+   ],
+   "fala": [
+    "Abra o Google Maps e procure três coisas.",
+    "Nota alta.",
+    "Muitas avaliações.",
+    "E nenhum site no perfil."
+   ]
+  },
+  {
+   "tipo": "chat",
+   "etiqueta": "Passo 2 · O Claude monta",
+   "chat": {
+    "janela": "Claude",
+    "pergunta": "Crie uma página de uma tela para esta padaria. Use estas 12 avaliações como depoimentos.",
+    "resposta": [
+     "Título com a especialidade da casa",
+     "3 depoimentos do Google, com a fonte",
+     "Horário, mapa e botão de WhatsApp"
+    ]
+   },
+   "fala": [
+    "Copie as avaliações e peça ao Claude uma página de uma tela.",
+    "Os depoimentos já estão prontos: quem escreveu foi o cliente dele."
+   ]
+  },
+  {
+   "tipo": "forte",
+   "rotulo": "A regra que ninguém segue",
+   "numero": "1",
+   "titulo": "por vez. _Nada de disparo._",
+   "fala": [
+    "A regra: um por vez. Mandar a mesma mensagem para cinquenta negócios queima a sua conta."
+   ]
+  },
+  {
+   "tipo": "palavra",
+   "kicker": "Na ligação",
+   "palavras": [
+    {
+     "fala": "vende",
+     "texto": "Não vende."
+    },
+    {
+     "fala": "mostra",
+     "texto": "Mostra."
+    }
+   ],
+   "serif": "a página já está pronta na tela.",
+   "fala": [
+    "Na ligação, você não vende. Você mostra a página pronta."
+   ]
+  },
+  {
+   "tipo": "cta",
+   "titulo": "Quer os prompts?",
+   "palavraChave": "PAGINA",
+   "texto": "_3 prompts_ + roteiro da primeira ligação",
+   "botoes": [
+    "Salvar",
+    "PAGINA"
+   ],
+   "fala": [
+    "Quer os três prompts e o roteiro da primeira ligação?",
+    {
+     "say": "Comenta página que eu te mando.",
+     "cap": "Comenta PAGINA que eu te mando."
+    }
+   ]
+  }
+ ]
+}

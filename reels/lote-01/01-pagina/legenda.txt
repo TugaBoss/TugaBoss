@@ -1,0 +1,8 @@
+Do Google Maps ao cliente, com a página já pronta.
+
+A prospecção comum é uma promessa: "eu faço sites, quer um?".
+Aqui você inverte a ordem: escolhe o negócio bem avaliado e sem site, o Claude monta a página com as avaliações dos próprios clientes e só então você liga.
+
+Uma regra que ninguém segue: um por vez. Disparo em massa queima a sua conta.
+
+Comenta PAGINA que eu te mando os 3 prompts e o roteiro da primeira ligação.
