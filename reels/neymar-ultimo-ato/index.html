@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Reels — Neymar, o último ato na Vila?</title>
+<script src="cues.js"></script>
+<style>
+@font-face{font-family:AB;src:url(fonts/archivo-black-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:Archivo;font-weight:500;src:url(fonts/archivo-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Archivo;font-weight:700;src:url(fonts/archivo-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:JBM;font-weight:500;src:url(fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:JBM;font-weight:700;src:url(fonts/jetbrains-mono-latin-700-normal.woff2) format("woff2")}
+:root{--bg:#0d0d10;--p1:#16161b;--p2:#1e1e25;--red:#F0202D;--yel:#FFD400;--w:#fff;--mute:#8d8d98}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000}
+*,*::before,*::after{animation-play-state:paused!important}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg);color:#fff;font-family:Archivo,sans-serif;font-weight:500}
+.scene{position:absolute;inset:0;overflow:hidden;background:var(--bg)}
+.abs{position:absolute}
+.h{font-family:AB;text-transform:uppercase;line-height:.95;letter-spacing:-2px}
+.red{color:var(--red)}.yel{color:var(--yel)}.ink{color:var(--bg)}
+.mono{font-family:JBM;font-weight:700;font-size:28px;letter-spacing:4px;text-transform:uppercase}
+.tag{display:inline-block;font-family:JBM;font-weight:700;font-size:28px;letter-spacing:4px;text-transform:uppercase;background:var(--red);color:#fff;padding:12px 20px}
+.body{font-size:42px;line-height:1.25;font-weight:700}
+.w{display:inline-block;white-space:pre}
+.line{display:block;overflow:hidden;padding:8px 0;margin:-8px 0}
+.ph{position:absolute;inset:0;overflow:hidden;background:#000}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:50% 50%}
+.credit{position:absolute;font-family:JBM;font-weight:500;font-size:18px;letter-spacing:1px;color:rgba(255,255,255,.6);text-transform:uppercase}
+
+/* chrome */
+#chrome{position:absolute;inset:0;z-index:50;pointer-events:none}
+#chrome .shade{position:absolute;left:0;right:0;top:0;height:260px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
+#chrome .row{position:absolute;left:70px;right:70px;top:108px;display:flex;justify-content:space-between;align-items:center}
+#chrome .row b{font-family:Archivo;font-weight:700;font-size:30px;letter-spacing:4px}
+#chrome .row span{font-family:JBM;font-weight:700;font-size:22px;letter-spacing:3px;opacity:.85}
+#chrome .rule{position:absolute;left:70px;right:70px;top:164px;height:4px;background:rgba(255,255,255,.22)}
+#chrome .rule i{position:absolute;inset:0;background:#fff;transform-origin:0 50%}
+
+/* captions */
+#caps{position:absolute;left:0;right:0;top:1416px;z-index:60;display:flex;justify-content:center}
+.cap{position:absolute;top:0;max-width:920px;text-align:center;background:#fff;color:#0d0d10;font-weight:700;font-size:46px;line-height:1.14;padding:16px 30px 18px;box-shadow:0 14px 50px rgba(0,0,0,.55)}
+.cap em{font-style:normal;color:var(--red)}
+#flash{position:absolute;inset:0;z-index:40;background:#fff;opacity:0;pointer-events:none}
+
+/* keyframes */
+@keyframes wipe{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0)}}
+@keyframes wipeD{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+@keyframes wipeL{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes wipeR{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0)}}
+@keyframes circle{from{clip-path:circle(0% at 50% 55%)}to{clip-path:circle(120% at 50% 55%)}}
+@keyframes gone{from,to{visibility:hidden}}
+@keyframes up{from{opacity:0;transform:translateY(80px)}to{opacity:1;transform:none}}
+@keyframes rise{from{transform:translateY(125%)}to{transform:none}}
+@keyframes riseCol{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes slam{0%{opacity:0;transform:scale(2.6)}55%{opacity:1;transform:scale(.95)}78%{transform:scale(1.03)}100%{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.14)}100%{opacity:1;transform:none}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes kb{from{transform:scale(1.04)}to{transform:scale(1.2)}}
+@keyframes kbx{from{transform:scale(1.12) translateX(-2.5%)}to{transform:scale(1.2) translateX(2.5%)}}
+@keyframes flash{0%{opacity:.8}100%{opacity:0}}
+@keyframes shake{0%,100%{transform:none}15%{transform:translate(-16px,8px)}30%{transform:translate(14px,-9px)}45%{transform:translate(-10px,-6px)}60%{transform:translate(9px,6px)}80%{transform:translate(-4px,2px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes capIn{from{opacity:0;transform:translateY(26px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes marq{from{transform:translateX(0)}to{transform:translateX(-1400px)}}
+@keyframes stripes{from{background-position:0 0}to{background-position:480px 0}}
+@keyframes travel{from{left:0}to{left:100%}}
+@keyframes tilt{from{opacity:0;transform:rotate(8deg) translateY(300px) scale(.8)}to{opacity:1;transform:rotate(-3deg)}}
+
+.node{position:absolute;left:170px;right:70px}
+.node::before{content:"";position:absolute;left:-76px;top:8px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:6px solid var(--red)}
+.node small{display:block;font-family:JBM;font-weight:700;font-size:28px;letter-spacing:4px;color:var(--red);margin-bottom:10px}
+.node b{display:block;font-family:AB;font-size:60px;letter-spacing:-1px;text-transform:uppercase;line-height:1}
+.node p{font-size:34px;color:#c9c9d2;margin-top:12px}
+.col{position:absolute;top:420px;bottom:0;width:360px;padding:70px 0 0;text-align:center}
+.col .L{font-family:AB;font-size:330px;line-height:1}
+.col .N{font-family:AB;font-size:46px;letter-spacing:1px;margin-top:10px}
+.panel{position:absolute;left:0;width:1080px;height:640px;overflow:hidden;background:#000}
+.panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85) contrast(1.08)}
+.panel .lb{position:absolute;left:70px;bottom:44px}
+.panel .lb b{display:block;font-family:AB;font-size:76px;text-transform:uppercase;letter-spacing:-2px;margin-top:10px;text-shadow:0 4px 30px rgba(0,0,0,.7)}
+.panel::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.72))}
+.panel .lb{z-index:2}
+.stat{flex:1;background:var(--p1);border:2px solid #2a2a33;padding:20px 0 16px;text-align:center}
+.stat b{display:block;font-family:AB;font-size:70px;line-height:1}
+.stat small{font-family:JBM;font-weight:700;font-size:22px;letter-spacing:4px;color:var(--mute)}
+.btn{flex:1;white-space:nowrap;font-family:AB;font-size:56px;text-align:center;padding:38px 0 34px;text-transform:uppercase;letter-spacing:-1px}
+.dg{position:relative;display:inline-block}
+.dg span{position:absolute;left:0;top:0;white-space:nowrap}
+.dg span.keep{position:relative}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 · GANCHO -->
+<section class="scene" data-scene="hook">
+  <div class="ph"><img src="img/santos-carrinho.jpg" style="object-position:52% 50%;filter:grayscale(1) contrast(1.15) brightness(.82)" data-loop="kb"></div>
+  <div class="abs" style="inset:0;background:linear-gradient(rgba(13,13,16,.5) 0%,transparent 26%,transparent 40%,rgba(13,13,16,.96) 70%)"></div>
+  <div class="abs" style="left:70px;top:905px"><span class="tag" data-c="@hook+0.15" data-a="wipeL">Trilha do Craque #08</span></div>
+  <div class="abs h" style="left:62px;top:985px;font-size:192px;letter-spacing:-7px;white-space:nowrap" id="ney"></div>
+  <div class="abs h red" style="left:70px;top:1215px;font-size:72px"><span class="line"><span class="w" data-c="h1+1.3" data-a="rise">O último ato na Vila?</span></span></div>
+  <div class="abs" style="left:70px;top:1330px;width:300px;height:10px;background:var(--red);transform-origin:0 50%" data-c="h2" data-a="growX"></div>
+  <div class="credit" style="left:70px;top:186px">Foto: reprodução</div>
+</section>
+
+<!-- 2 · ORIGEM -->
+<section class="scene" data-scene="origem">
+  <div class="abs h" style="right:-60px;top:190px;font-size:520px;writing-mode:vertical-rl;color:transparent;-webkit-text-stroke:3px #2b2b34;letter-spacing:-10px" data-c="@origem+0.2" data-a="up" data-d="1.2">1992</div>
+  <div class="abs" style="left:70px;top:240px"><span class="mono red" data-c="@origem+0.3" data-a="wipeL">01 · Origem</span></div>
+  <div class="abs h" style="left:70px;top:305px;font-size:108px">
+    <span class="line"><span class="w" data-c="o1" data-a="rise">Mogi das</span></span>
+    <span class="line"><span class="w" data-c="o1+0.12" data-a="rise">Cruzes,</span></span>
+    <span class="line"><span class="w red" data-c="o1+1.6" data-a="rise">05/02/1992.</span></span>
+  </div>
+  <div class="abs" style="left:107px;top:760px;width:6px;height:590px;background:var(--red);transform-origin:50% 0" data-c="o1+1.2" data-a="growY" data-d="2.6" data-ease="linear"></div>
+  <div class="node" style="top:740px" data-c="o1+1.3" data-a="up"><small>1992</small><b>Do futsal</b><p>e do futebol de rua.</p></div>
+  <div class="node" style="top:935px" data-c="o1+2.6" data-a="up"><small>1999–2003</small><b>Portuguesa Santista</b><p>As primeiras escolinhas.</p></div>
+  <div class="node" style="top:1140px;background:var(--red);padding:22px 26px 24px;margin-left:-26px" data-c="o2+0.4" data-a="up"><small style="color:#fff">2003 · aos 11 anos</small><b>Base do Santos</b></div>
+</section>
+
+<!-- 3 · ESTREIA / 2011 -->
+<section class="scene" data-scene="estreia">
+  <div class="abs" style="left:70px;top:240px"><span class="mono red" data-c="@estreia+0.3" data-a="wipeL">02 · A estreia</span></div>
+  <div class="abs h red" style="left:40px;top:250px;font-size:820px;letter-spacing:-40px;line-height:1" data-c="e1-0.1" data-a="slam" data-d="0.5"><span class="dg" id="c17"></span></div>
+  <div class="abs h" style="left:70px;top:1040px;font-size:170px"><span class="line"><span class="w" data-c="e1+0.5" data-a="rise">Anos.</span></span></div>
+  <div class="abs mono" style="left:70px;top:1235px;color:#c9c9d2;line-height:1.5" data-c="e1+0.8" data-a="up">07/03/2009 · Paulista<br>Santos 2×1 Oeste</div>
+  <div class="abs h" style="left:0;top:1540px;font-size:260px;white-space:nowrap;color:transparent;-webkit-text-stroke:3px #2b2b34" data-loop="marq">2009 · ESTREIA · 2009 · ESTREIA · 2009</div>
+
+  <div class="abs" style="inset:0;background:var(--bg)" data-c="e2-0.15" data-a="wipeD" data-d="0.55">
+    <div class="abs h" style="left:0;right:0;top:1500px;font-size:300px;text-align:center;color:transparent;-webkit-text-stroke:3px #2b2b34;white-space:nowrap">2011 2011</div>
+    <div class="abs" style="left:70px;top:240px"><span class="mono red">03 · O auge na Vila</span></div>
+    <div class="abs h" style="left:60px;top:310px;font-size:330px;letter-spacing:-16px;line-height:1;white-space:nowrap"><span class="w" data-c="e2" data-a="slam" data-d="0.5">2011<span class="red">.</span></span></div>
+    <div class="abs h" style="left:70px;top:720px;font-size:92px">
+      <span class="line"><span class="w" data-c="e2+0.7" data-a="rise">Campeão da</span></span>
+      <span class="line"><span class="w red" data-c="e2+0.85" data-a="rise">Libertadores</span></span>
+    </div>
+    <div class="abs body" style="left:70px;top:925px;color:#c9c9d2" data-c="e2+1.2" data-a="up">e melhor jogador do torneio, aos 19.</div>
+    <div class="abs" style="left:70px;right:70px;top:1040px;background:#fff;color:var(--bg);padding:36px 40px 38px" data-c="e3" data-a="up">
+      <div class="mono red">Prêmio Puskás · FIFA 2011</div>
+      <div class="h" style="font-size:66px;margin-top:16px;letter-spacing:-1.5px">O gol mais bonito do mundo</div>
+      <div class="body" style="font-size:34px;margin-top:16px">Santos 4×5 Flamengo · 27/07/2011</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · BARCELONA -->
+<section class="scene" data-scene="barca">
+  <div class="abs" style="left:70px;top:226px"><span class="mono red" data-c="@barca+0.3" data-a="wipeL">04 · Barcelona</span></div>
+  <div class="abs h" style="left:70px;top:278px;font-size:62px"><span class="line"><span class="w" data-c="b1" data-a="rise">O trio que <span class="red">ganhou tudo.</span></span></span></div>
+  <div class="col" style="left:0;background:var(--p1)" data-c="b1+0.9" data-a="riseCol" data-d="0.7"><div class="L">M</div><div class="N">Messi</div></div>
+  <div class="col" style="left:360px;background:var(--p2)" data-c="b1+1.5" data-a="riseCol" data-d="0.7"><div class="L">S</div><div class="N">Suárez</div></div>
+  <div class="col" style="left:720px;background:var(--red)" data-c="b1+2.4" data-a="riseCol" data-d="0.7"><div class="L">N</div><div class="N">Neymar</div></div>
+  <div class="abs" style="left:70px;right:70px;top:1010px;background:#fff;color:var(--bg);padding:36px 40px 38px" data-c="b2-0.1" data-a="up">
+    <div class="mono red" style="font-size:24px">Final da Champions · Berlim · 06/06/2015</div>
+    <div class="h" style="font-size:60px;margin-top:16px;letter-spacing:-1.5px">Barcelona 3×1 Juventus</div>
+    <div class="body" style="font-size:36px;margin-top:14px">Neymar fez o terceiro gol.</div>
+  </div>
+  <div class="abs mono" style="left:0;right:0;top:1345px;text-align:center;font-size:24px" data-c="b2+0.5" data-a="fade">39 gols de Neymar em 2014-15</div>
+</section>
+
+<!-- 5 · RECORDE -->
+<section class="scene" data-scene="recorde" data-in="circle" style="background:var(--red)">
+  <div class="abs" style="inset:0;background:repeating-linear-gradient(115deg,transparent 0 120px,rgba(0,0,0,.07) 120px 240px);background-size:480px 100%" data-loop="stripes"></div>
+  <div class="abs mono" style="left:70px;top:240px" data-c="@recorde+0.4" data-a="wipeL">05 · Barcelona → PSG · 03/08/2017</div>
+  <div class="abs h" style="left:70px;top:310px;font-size:86px">
+    <span class="line"><span class="w" data-c="t1" data-a="rise">A transferência</span></span>
+    <span class="line"><span class="w ink" data-c="t1+0.5" data-a="rise">mais cara</span></span>
+    <span class="line"><span class="w" data-c="t1+1.2" data-a="rise">da história.</span></span>
+  </div>
+  <div class="abs h" style="left:50px;top:690px;font-size:380px;letter-spacing:-16px;line-height:1" data-c="t2-0.15" data-a="slam" data-d="0.45">€<span class="dg" id="c222"></span></div>
+  <div class="abs h ink" style="left:62px;top:1085px;font-size:196px;letter-spacing:-8px"><span class="line"><span class="w" data-c="t2+1.1" data-a="rise">Milhões</span></span></div>
+  <div class="abs h" style="left:0;top:1560px;font-size:230px;white-space:nowrap;color:transparent;-webkit-text-stroke:3px rgba(0,0,0,.28)" data-loop="marq">€222M · €222M · €222M · €222M · €222M · €222M</div>
+</section>
+
+<!-- 6 · O PREÇO DO CORPO -->
+<section class="scene" data-scene="corpo" style="background:#000">
+  <div class="abs" style="inset:0" id="corpoShake">
+    <div class="abs h" style="left:70px;top:560px;font-size:180px;letter-spacing:-7px" data-x="c2-0.05">
+      <div><span class="w" data-c="c1" data-a="slam">O preço</span></div>
+      <div><span class="w" data-c="c1+0.45" data-a="slam">do </span><span class="w red" data-c="c1+0.75" data-a="slam">corpo.</span></div>
+    </div>
+    <div class="abs mono red" style="left:70px;top:480px" data-c="@corpo+0.3" data-a="wipeL" data-x="c2-0.05">06 · As lesões</div>
+  </div>
+  <div class="abs h" style="left:0;right:0;top:820px;text-align:center;font-size:300px;letter-spacing:-10px;color:transparent;-webkit-text-stroke:3px #2b2b34" data-c="c2" data-a="fade">2022</div>
+  <div class="abs h" style="left:0;right:0;top:1460px;text-align:center;font-size:300px;letter-spacing:-10px;color:transparent;-webkit-text-stroke:3px #2b2b34" data-c="c2+0.2" data-a="fade">2023</div>
+  <div class="panel" style="top:0" data-c="c2-0.1" data-a="wipeL" data-d="0.5"><img src="img/extra.jpg" style="object-position:60% 50%" data-loop="kbx"><div class="lb"><span class="tag">Copa 2014</span><b>Vértebra</b></div></div>
+  <div class="panel" style="top:640px" data-c="c3-0.1" data-a="wipeR" data-d="0.5"><img src="img/copa2022.jpg" style="object-position:50% 40%" data-loop="kbx"><div class="lb"><span class="tag">Copa 2022</span><b>Tornozelo</b></div></div>
+  <div class="panel" style="top:1280px" data-c="c4-0.1" data-a="wipeL" data-d="0.5"><img src="img/psg.jpg" style="object-position:55% 50%" data-loop="kbx"><div class="lb" style="bottom:auto;top:34px;display:flex;align-items:center;gap:22px"><span class="tag">PSG · 2021 e 2023</span><b style="margin:0;font-size:60px">Tornozelo</b></div></div>
+
+  <div class="abs" style="inset:0;background:var(--red)" data-c="c5-0.12" data-a="wipe" data-d="0.5">
+    <div class="abs" style="inset:0;background:repeating-linear-gradient(115deg,transparent 0 120px,rgba(0,0,0,.07) 120px 240px);background-size:480px 100%" data-loop="stripes"></div>
+    <div class="abs mono" style="left:70px;top:520px" data-c="c5+0.2" data-a="wipeL">Out/2023 · pela Seleção</div>
+    <div class="abs h" style="left:62px;top:590px;font-size:150px;letter-spacing:-7px">
+      <div><span class="w" data-c="c5+0.15" data-a="slam">Ligamento</span></div>
+      <div class="ink"><span class="w" data-c="c5+0.7" data-a="slam">cruzado.</span></div>
+    </div>
+    <div class="abs body" style="left:70px;top:920px;font-size:46px" data-c="c5+1.5" data-a="up">Joelho esquerdo. Quase um ano parado.</div>
+  </div>
+
+  <div class="abs" style="inset:0;background:#000" data-c="c6-0.12" data-a="wipeD" data-d="0.5">
+    <div class="ph"><img src="img/santos-fisio.jpg" style="filter:blur(28px) grayscale(1) brightness(.45);transform:scale(1.2)"></div>
+    <div class="abs" style="left:150px;top:270px;width:780px;height:1040px;border:12px solid #fff;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6)" data-c="c6-0.05" data-a="tilt" data-d="0.7">
+      <img src="img/santos-fisio.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.06)" data-loop="kb">
+    </div>
+    <div class="abs" style="left:70px;top:1215px" data-c="c6+0.5" data-a="pop"><span class="tag" style="font-size:34px;padding:16px 24px">De volta ao Santos · 2025</span></div>
+    <div class="credit" style="left:70px;top:186px">Fotos: reprodução</div>
+  </div>
+  <div class="credit" style="left:70px;top:186px;z-index:1">Fotos: reprodução</div>
+</section>
+
+<!-- 7 · SELEÇÃO -->
+<section class="scene" data-scene="selecao">
+  <div class="abs h" style="left:0;top:1540px;font-size:260px;white-space:nowrap;color:transparent;-webkit-text-stroke:3px #2b2b34" data-loop="marq">80 GOLS · 130 JOGOS · 80 GOLS · 130 JOGOS</div>
+  <div class="abs" style="left:70px;top:240px"><span class="mono yel" data-c="@selecao+0.3" data-a="wipeL">07 · Seleção Brasileira</span></div>
+  <div class="abs h yel" style="left:36px;top:250px;font-size:760px;letter-spacing:-36px;line-height:1" data-c="s1-0.1" data-a="fade" data-d="0.2"><span class="dg" id="c80"></span></div>
+  <div class="abs h" style="left:70px;top:985px;font-size:190px;letter-spacing:-7px"><span class="line"><span class="w" data-c="s1+1.0" data-a="rise">Gols.</span></span></div>
+  <div class="abs h ink" style="left:0;right:0;top:1180px;background:var(--yel);font-size:42px;letter-spacing:-1px;white-space:nowrap;padding:22px 70px 20px;transform-origin:0 50%" data-c="s2" data-a="wipeL">O maior artilheiro da história</div>
+  <div class="abs" style="left:70px;right:70px;top:1285px;display:flex;gap:16px" data-c="s2+0.6" data-a="up">
+    <div class="stat"><b>130</b><small>jogos</small></div><div class="stat"><b>4</b><small>Copas</small></div><div class="stat"><b class="yel">2016</b><small>ouro olímpico</small></div>
+  </div>
+  <div class="abs" style="inset:0;background:rgba(13,13,16,.97)" data-c="s3-0.1" data-a="fade" data-d="0.4">
+    <div class="abs mono yel" style="left:70px;top:520px" data-c="s3+0.1" data-a="wipeL">29/07/2026 · o adeus</div>
+    <div class="abs h" style="left:62px;top:590px;font-size:150px;letter-spacing:-6px">
+      <div><span class="w" data-c="s3+0.5" data-a="slam">“Agora</span></div>
+      <div><span class="w" data-c="s3+1.0" data-a="slam">não quero</span></div>
+      <div class="yel"><span class="w" data-c="s3+1.6" data-a="slam">mais.”</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · AGORA -->
+<section class="scene" data-scene="agora">
+  <div class="abs h" style="left:-20px;top:1500px;font-size:330px;white-space:nowrap;color:transparent;-webkit-text-stroke:3px #2b2b34" data-loop="marq">31/12 · 31/12 · 31/12 · 31/12 · 31/12</div>
+  <div class="abs" style="left:70px;top:240px"><span class="mono red" data-c="@agora+0.3" data-a="wipeL">08 · Hoje</span></div>
+  <div class="abs h" style="left:70px;top:305px;font-size:92px">
+    <span class="line"><span class="w" data-c="n1" data-a="rise">O contrato</span></span>
+    <span class="line"><span class="w" data-c="n1+0.15" data-a="rise">tem <span class="red">data</span></span></span>
+    <span class="line"><span class="w red" data-c="n1+0.3" data-a="rise">para acabar.</span></span>
+  </div>
+  <div class="abs h red" style="left:54px;top:650px;font-size:330px;letter-spacing:-14px;line-height:1" data-c="n1+2.2" data-a="slam" data-d="0.5">31/12</div>
+  <div class="abs h" style="left:64px;top:965px;font-size:150px;letter-spacing:-4px;color:transparent;-webkit-text-stroke:4px #fff" data-c="n1+2.7" data-a="up">2026</div>
+  <div class="abs" style="left:90px;right:90px;top:1265px;height:8px;background:#33333d">
+    <div class="abs" style="inset:0;background:var(--red);transform-origin:0 50%" data-c="n2-0.2" data-a="growX" data-d="3.2" data-ease="linear"></div>
+    <div class="abs" style="left:0;top:-16px;width:40px;height:40px;margin-left:-20px;border-radius:50%;background:#fff" data-c="n2-0.3" data-a="pop"><div class="mono" style="position:absolute;left:0;top:54px;font-size:22px;white-space:nowrap">Hoje</div></div>
+    <div class="abs" style="left:45%;top:-22px;width:52px;height:52px;margin-left:-26px;border-radius:50%;background:var(--yel)" data-c="n2+1.0" data-a="pop"><div class="mono yel" style="position:absolute;left:50%;transform:translateX(-50%);top:-52px;font-size:26px;white-space:nowrap">12/12 · Eleição</div></div>
+    <div class="abs" style="left:100%;top:-22px;width:52px;height:52px;margin-left:-26px;border-radius:50%;background:var(--red);border:6px solid #fff" data-c="n2+2.4" data-a="pop"><div class="mono red" style="position:absolute;right:0;top:58px;font-size:22px;white-space:nowrap">31/12 · Fim</div></div>
+  </div>
+</section>
+
+<!-- 9 · CTA -->
+<section class="scene" data-scene="cta" data-in="circle">
+  <div class="ph"><img src="img/santos-carrinho.jpg" style="object-position:52% 50%;filter:grayscale(1) contrast(1.2) brightness(.9)" data-loop="kb"></div>
+  <div class="abs" style="inset:0;background:var(--red);mix-blend-mode:multiply"></div>
+  <div class="abs" style="inset:0;background:linear-gradient(rgba(13,13,16,.55),rgba(13,13,16,.15) 35%,rgba(13,13,16,.75))"></div>
+  <div class="abs" style="left:70px;top:250px"><span class="tag" style="background:#fff;color:var(--bg)" data-c="@cta+0.3" data-a="wipeL">E agora?</span></div>
+  <div class="abs h" style="left:62px;top:340px;font-size:250px;letter-spacing:-10px"><span class="w" data-c="f1" data-a="slam">Fica,</span></div>
+  <div class="abs h" style="left:66px;top:600px;font-size:118px;letter-spacing:-4px;line-height:.98">
+    <span class="line"><span class="w" data-c="f1+0.55" data-a="rise">ou é o</span></span>
+    <span class="line"><span class="w" data-c="f1+0.8" data-a="rise">último ato</span></span>
+    <span class="line"><span class="w" data-c="f1+1.2" data-a="rise">na Vila?</span></span>
+  </div>
+  <div class="abs" style="left:70px;right:70px;top:1050px;display:flex;gap:18px">
+    <div class="btn" style="background:#fff;color:var(--bg)" data-c="f1+1.5" data-a="pop"><div data-pulse="f2">Fica</div></div>
+    <div class="btn" style="background:var(--bg);color:#fff" data-c="f1+1.8" data-a="pop"><div data-pulse="f2+0.4">Último ato</div></div>
+  </div>
+  <div class="abs body" style="left:70px;right:70px;top:1250px;font-size:40px" data-c="f2" data-a="up">Comenta o craque que você quer no próximo episódio.</div>
+</section>
+
+<div id="flash"></div>
+<div id="caps"></div>
+<div id="chrome">
+  <div class="shade"></div>
+  <div class="row"><b>CAMISA 10 GYN</b><span>@camisa10gyn</span></div>
+  <div class="rule"><i id="prog"></i></div>
+</div>
+</div>
+
+<script>
+const EASE = 'cubic-bezier(.16,1,.3,1)';
+const C = Object.fromEntries(CUES.map(c => [c.id, c])), SC = Object.fromEntries(SCENES.map(s => [s.id, s.s]));
+const T = x => { const m = x.match(/^(@?\w+?)(\.e)?([+-][\d.]+)?$/); const b = m[1][0] === '@' ? SC[m[1].slice(1)] : (m[2] ? C[m[1]].e : C[m[1]].s); return Math.max(0, b + (m[3] ? +m[3] : 0)); };
+const add = (el, s) => { el.style.animation = el.style.animation ? el.style.animation + ',' + s : s; };
+
+// NEYMAR letra a letra
+const ney = document.getElementById('ney');
+[...'NEYMAR'].forEach((ch, i) => { const s = document.createElement('span'); s.className = 'w'; s.textContent = ch; s.dataset.c = 'h1+' + (0.05 + i * 0.07).toFixed(2); s.dataset.a = 'slam'; ney.appendChild(s); });
+
+// contadores
+function counter(id, cue, vals, step) {
+  const el = document.getElementById(id), t0 = T(cue);
+  vals.forEach((v, i) => { const s = document.createElement('span'); s.textContent = v; const last = i === vals.length - 1;
+    if (last) s.className = 'keep';
+    add(s, `fade .03s linear ${t0 + i * step}s both`); if (!last) add(s, `gone 1s linear ${t0 + (i + 1) * step}s forwards`); el.appendChild(s); });
+}
+counter('c17', 'e1-0.1', [9, 11, 13, 14, 15, 16, 17], 0.07);
+counter('c222', 't2-0.15', [0, 24, 51, 88, 120, 147, 171, 190, 204, 213, 219, 222], 0.075);
+counter('c80', 's1-0.1', [0, 7, 15, 24, 33, 42, 51, 59, 66, 72, 76, 79, 80], 0.075);
+
+const scenes = [...document.querySelectorAll('.scene')];
+scenes.forEach((sc, i) => {
+  const s = SC[sc.dataset.scene], e = scenes[i + 1] ? SC[scenes[i + 1].dataset.scene] + 0.7 : DUR;
+  sc.style.zIndex = i + 1;
+  if (i) add(sc, `${sc.dataset.in || 'wipe'} .6s ${EASE} ${s}s both`);
+  if (e < DUR) add(sc, `gone 1s linear ${e}s forwards`);
+  sc.querySelectorAll('[data-loop]').forEach(g => {
+    const n = g.dataset.loop;
+    if (n === 'kb' || n === 'kbx') add(g, `${n} ${e - s + 0.6}s linear ${Math.max(0, s - 0.3)}s both`);
+    else add(g, `${n} ${n === 'marq' ? 9 : 6}s linear 0s infinite`);
+  });
+});
+document.querySelectorAll('[data-c]').forEach(el => {
+  const a = el.dataset.a, d = el.dataset.d || (a === 'slam' ? .36 : a === 'pop' ? .4 : .6);
+  add(el, `${a} ${d}s ${el.dataset.ease || EASE} ${T(el.dataset.c)}s both`);
+});
+document.querySelectorAll('[data-x]').forEach(el => add(el, `gone 1s linear ${T(el.dataset.x)}s forwards`));
+document.querySelectorAll('[data-pulse]').forEach(el => add(el, `pulse .5s ease-in-out ${T(el.dataset.pulse)}s 2`));
+add(document.getElementById('prog'), `growX ${DUR}s linear 0s both`);
+add(document.getElementById('corpoShake'), `shake .5s linear ${T('c1+0.75')}s`);
+['c1+0.75', 'c5+0.15', 't2+0.7', 's1+0.85'].forEach(t => add(document.getElementById('flash'), `flash .35s ease-out ${T(t)}s`));
+
+const caps = document.getElementById('caps');
+CUES.forEach((c, i) => {
+  const el = document.createElement('div'); el.className = 'cap'; el.innerHTML = c.cap; caps.appendChild(el);
+  const nx = CUES[i + 1]; const end = nx ? Math.min(nx.s - 0.02, c.e + 0.35) : c.e + 0.6;
+  add(el, `capIn .18s ${EASE} ${c.s}s both`); add(el, `gone 1s linear ${end}s forwards`);
+});
+
+window.seek = t => { document.getAnimations().forEach(a => { a.currentTime = t * 1000; }); };
+seek(0);
+</script>
+</body>
+</html>
